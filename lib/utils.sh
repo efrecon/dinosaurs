@@ -10,3 +10,5 @@ download() {
     wget -q -O "${2:-$(basename "$1")}" "$1"
   fi
 }
+
+tolower() { tr '[:upper:]' '[:lower:]'; }
