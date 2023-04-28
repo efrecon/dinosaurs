@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 . "$(dirname "$0")/../lib/utils.sh"
 
 TCL_VERSION=${TCL_VERSION:-"${1:-"8.0.5"}"}
