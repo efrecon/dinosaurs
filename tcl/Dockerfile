@@ -3,8 +3,9 @@ FROM ubuntu:10.04
 RUN sed s/archive/old-releases/g /etc/apt/sources.list > /tmp/sources.list && \
     mv /tmp/sources.list /etc/apt/sources.list && \
     apt-get update && \
-    apt-get install -y build-essential autoconf
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -yy && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential autoconf gcc-multilib
 
 COPY entrypoint.sh /usr/local/bin/
-
+RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
