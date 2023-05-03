@@ -4,20 +4,24 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - main
     paths:
       - "tcl/**"
       - ".github/workflows/tcl.yml"
 
 jobs:
-  build-80:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture:
+          - linux-x86_64
+          - linux-i386
+        version:
+          - "8.0.5"
     steps:
       - uses: actions/checkout@v2
       - name: Install tcl
-        run: ./tcl/fetch.sh --version 8.0.5
+        run: ./tcl/fetch.sh --version "${{ matrix.version }}"
       - name: build tcl
-        run: |
-          for arch in x86_64 i386; do
-            ./tcl/build.sh --version 8.0.5 --architecture "linux-$arch"
-          done
+        run: ./tcl/build.sh --version "${{ matrix.version }}" --architecture "${{ matrix.architecture }}"
