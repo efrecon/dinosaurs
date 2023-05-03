@@ -20,7 +20,7 @@ jobs:
         version:
           - "8.0.5"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install tcl
         run: ./tcl/fetch.sh --version "${{ matrix.version }}"
       - name: build tcl
