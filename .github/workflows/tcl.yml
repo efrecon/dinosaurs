@@ -1,0 +1,23 @@
+name: tcl
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - "tcl/**"
+      - ".github/workflows/tcl.yml"
+
+jobs:
+  build-80:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install tcl
+        run: ./tcl/fetch.sh --version 8.0.5
+      - name: build tcl
+        run: |
+          for arch in x86_64 i386; do
+            ./tcl/build.sh --version 8.0.5 --architecture "linux-$arch"
+          done
