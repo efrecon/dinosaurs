@@ -2,11 +2,15 @@
 
 This project automates downloading and compiling older versions of various
 tools. The intent is to be able to maintain a collection of automatically
-compiled binaries/libraries through GitHub workflows (TBD).
+compiled binaries/libraries through GitHub workflows. This project uses
+workflows and matrix strategies to compile versions back in time for several
+architectures. No packages are created yet.
 
-For the time being, you can try compiling tcl. The implementation uses the
-GitHub mirror and the ability to automatically download a version of a
-repository at a given tag as a compressed tar file.
+## Tcl
+
+You can also try manually compiling tcl. The implementation uses the GitHub
+mirror and the ability to automatically download a version of a repository at a
+given tag as a compressed tar file.
 
 To download and compile the default `8.0.5` version -- which is 25 years old,
 run the following from the root directory of this project. This requires a
