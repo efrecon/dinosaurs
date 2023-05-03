@@ -69,7 +69,7 @@ docker image build -f "$(dirname "$0")/Dockerfile" \
   --build-arg "DESTINATION=${DESTINATION}" \
   -t "tcl${VERSION}-${ARCHITECTURE}" \
   "$(dirname "$0")"
-docker run --rm -it \
+docker run --rm \
   -u "$(id -u):$(id -g)" \
   -v "${DESTINATION}:/dist" \
   -v "${SOURCE}:/src" \
