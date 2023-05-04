@@ -14,6 +14,9 @@ DESTINATION=${DESTINATION:-""}
 # Architecture to build for. Will default to the current one.
 ARCHITECTURE=${ARCHITECTURE:-"$(uname -s | tolower)-$(uname -m | tolower)"}
 
+# Shared or static libraries?
+SHARED=${SHARED:-"1"}
+
 # This uses the comments behind the options to show the help. Not extremly
 # correct, but effective and simple.
 # shellcheck disable=SC2120
@@ -41,6 +44,14 @@ while [ $# -gt 0 ]; do
       SOURCE=$2; shift 2;;
     --src=* | --source=*)
       SOURCE="${1#*=}"; shift 1;;
+
+    --shared)   # Force building of shared libraries if possible
+      SHARED=1; shift 1;;
+    --shared=*)
+      SHARED="${1#*=}"; shift 1;;
+
+    --static)   # Force building of static libraries if possible
+      SHARED=0; shift 1;;
 
     -a | --arch | --architecture) # The architecture to build for.
       ARCHITECTURE=$2; shift 2;;
@@ -76,4 +87,5 @@ docker run --rm \
   -w /src \
   "tcl${VERSION}-${ARCHITECTURE}" \
     --destination /dist \
-    --arch "$ARCHITECTURE"
+    --arch "$ARCHITECTURE" \
+    --shared="$SHARED"

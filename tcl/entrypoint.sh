@@ -11,6 +11,9 @@ DESTINATION=${DESTINATION:-"/usr/local"}
 # Architecture to build for. Will default to the current one.
 ARCHITECTURE=${ARCHITECTURE:-"$(uname -s | tolower)-$(uname -m | tolower)"}
 
+# Shared or static libraries?
+SHARED=${SHARED:-"1"}
+
 # This uses the comments behind the options to show the help. Not extremly
 # correct, but effective and simple.
 # shellcheck disable=SC2120
@@ -34,6 +37,14 @@ while [ $# -gt 0 ]; do
     --arch=* | --architecture=*)
       ARCHITECTURE="${1#*=}"; shift 1;;
 
+    --shared)   # Force building of shared libraries if possible
+      SHARED=1; shift 1;;
+    --shared=*)
+      SHARED="${1#*=}"; shift 1;;
+
+    --static)   # Force building of static libraries if possible
+      SHARED=0; shift 1;;
+
     -h | --help) # Show the help.
       usage;;
 
@@ -49,10 +60,10 @@ cd unix
 autoconf
 case "$ARCHITECTURE" in
   linux-x86_64)
-    CFLAGS="-m64" ./configure --enable-gcc --prefix="$DESTINATION"
+    CFLAGS="-m64" ./configure --enable-gcc --enable-shared=$SHARED --prefix="$DESTINATION"
     ;;
   linux-i?86)
-    CFLAGS="-m32" ./configure --enable-gcc --prefix="$DESTINATION"
+    CFLAGS="-m32" ./configure --enable-gcc --enable-shared=$SHARED --prefix="$DESTINATION"
     ;;
   *)
     echo "Unsupported architecture: $ARCHITECTURE" >&2
