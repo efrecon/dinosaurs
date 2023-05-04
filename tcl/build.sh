@@ -7,9 +7,10 @@ set -e
 # Version of Tcl to fetch. Will be converted to a git tag.
 VERSION=${VERSION:-"8.0.5"}
 
-# Destination directory. Will default to a subdirectory of the current, carrying
-# the version number when empty.
+# Souce and destination directories. Will default to a subdirectory of the
+# current, carrying the version number when empty.
 DESTINATION=${DESTINATION:-""}
+SOURCE=${SOURCE:-""}
 
 # Architecture to build for. Will default to the current one.
 ARCHITECTURE=${ARCHITECTURE:-"$(uname -s | tolower)-$(uname -m | tolower)"}
@@ -86,6 +87,7 @@ docker run --rm \
   -v "${SOURCE}:/src" \
   -w /src \
   "tcl${VERSION}-${ARCHITECTURE}" \
+    --source "/src" \
     --destination /dist \
     --arch "$ARCHITECTURE" \
     --shared="$SHARED"

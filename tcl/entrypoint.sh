@@ -4,9 +4,11 @@ set -e
 
 
 tolower() { tr '[:upper:]' '[:lower:]'; }
+
 # Destination directory. Will default to a subdirectory of the current, carrying
 # the version number when empty.
 DESTINATION=${DESTINATION:-"/usr/local"}
+SOURCE=${SOURCE:-"/usr/local/src"}
 
 # Architecture to build for. Will default to the current one.
 ARCHITECTURE=${ARCHITECTURE:-"$(uname -s | tolower)-$(uname -m | tolower)"}
@@ -32,6 +34,11 @@ while [ $# -gt 0 ]; do
     --dest=* | --destination=*)
       DESTINATION="${1#*=}"; shift 1;;
 
+    -s | --src | --source) # The source directory.
+      SOURCE=$2; shift 2;;
+    --src=* | --source=*)
+      SOURCE="${1#*=}"; shift 1;;
+
     -a | --arch | --architecture) # The architecture to build for.
       ARCHITECTURE=$2; shift 2;;
     --arch=* | --architecture=*)
@@ -56,7 +63,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-cd unix
+cd "${SOURCE}/unix"
 autoconf
 case "$ARCHITECTURE" in
   linux-x86_64)
