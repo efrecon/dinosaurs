@@ -23,10 +23,15 @@ jobs:
           - "8.2.3"
           - "8.3.5"
           - "8.4.20"
+        exclude:
+          - architecture: linux-i386
+            version: "8.3.5"
     steps:
       - uses: actions/checkout@v3
       - name: Install tcl
-        run: ./tcl/fetch.sh --version "${{ matrix.version }}"
+        run: >
+          ./tcl/fetch.sh
+            --version "${{ matrix.version }}"
       - name: build tcl
         run: >
           ./tcl/build.sh
