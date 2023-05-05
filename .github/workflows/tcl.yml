@@ -64,14 +64,12 @@ jobs:
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
-        with:
-          path: tarballs
       - name: Create release
         id: release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            tarballs/*
+            **/*.tar.gz
           tag_name: tcl
           body: |
             This is a release of all final major versions of Tcl for Linux 64 and 32 bits.
