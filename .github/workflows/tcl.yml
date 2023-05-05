@@ -67,6 +67,8 @@ jobs:
         with:
           tag_name: tcl
           delete_release: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Download artifacts
         uses: actions/download-artifact@v3
       - name: Collect tarballs
@@ -79,7 +81,7 @@ jobs:
           artifacts: "*.tar.gz"
           allowUpdates: true
           body: |
-            This is a release of all final major versions of Tcl for Linux 64 and 32 bits.
+            This is a release of all final minor versions of Tcl for Linux 64 and 32 bits.
           commit: ${{ github.ref }}
           name: Tcl
           tag: tcl
