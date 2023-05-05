@@ -62,6 +62,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Delete old release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.1
+        with:
+          tag_name: tcl
+          delete_release: true
       - name: Download artifacts
         uses: actions/download-artifact@v3
       - name: Collect tarballs
@@ -72,10 +77,10 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "*.tar.gz"
-          allowUpdates: 'true'
+          allowUpdates: true
           body: |
             This is a release of all final major versions of Tcl for Linux 64 and 32 bits.
           commit: ${{ github.ref }}
           name: Tcl
           tag: tcl
-          replacesArtifacts: 'true'
+          replacesArtifacts: true
