@@ -70,7 +70,7 @@ jobs:
         with:
           files: |
             **/*.tar.gz
-          tag_name: tcl
+          name: tcl
           body: |
             This is a release of all final major versions of Tcl for Linux 64 and 32 bits.
           draft: false
