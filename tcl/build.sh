@@ -13,7 +13,7 @@ DESTINATION=${DESTINATION:-""}
 SOURCE=${SOURCE:-""}
 
 # Architecture to build for. Will default to the current one.
-ARCHITECTURE=${ARCHITECTURE:-"$(uname -s | tolower)-$(uname -m | tolower)"}
+ARCHITECTURE=${ARCHITECTURE:-"$(architecture)"}
 
 # Shared or static libraries?
 SHARED=${SHARED:-"1"}

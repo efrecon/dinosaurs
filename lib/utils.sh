@@ -12,3 +12,5 @@ download() {
 }
 
 tolower() { tr '[:upper:]' '[:lower:]'; }
+
+architecture() { printf %s-%s\\n "$(uname -s | tolower)" "$(uname -m | tolower)"; }
