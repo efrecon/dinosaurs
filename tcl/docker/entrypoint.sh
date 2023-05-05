@@ -2,6 +2,7 @@
 
 set -e
 
+# shellcheck source=../../lib/utils.sh
 . "$(dirname "$0")/../share/utils.sh"
 
 # Destination directory. Will default to a subdirectory of the current, carrying
@@ -17,6 +18,7 @@ SHARED=${SHARED:-"1"}
 
 # shellcheck disable=SC2034 # Variable used in lib/options.sh
 USAGE="builds Tcl on UNIX"
+# shellcheck source=../../lib/options.sh
 . "$(dirname "$0")/../share/options.sh"
 
 cd "${SOURCE}/unix"
