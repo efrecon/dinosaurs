@@ -54,7 +54,7 @@ jobs:
         id: upload
         uses: actions/upload-artifact@v3
         with:
-          name: tcl${{ matrix.version }}-${{ matrix.architecture }}.tar.gz
+          name: tcl${{ matrix.version }}-${{ matrix.architecture }}
           path: ${{ steps.pack.outputs.TARBALL }}
           retention-days: 7
 
@@ -63,7 +63,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
+      - name: Collect tarballs
+        run: |
+          find . -name "*.tar.gz" -exec mv \{\} . \;
       - name: Create release
         id: release
         uses: ncipollo/release-action@v1
