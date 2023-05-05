@@ -57,3 +57,22 @@ jobs:
           name: tcl${{ matrix.version }}-${{ matrix.architecture }}.tar.gz
           path: ${{ steps.pack.outputs.TARBALL }}
           retention-days: 7
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: tarballs
+      - name: Create release
+        id: release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            tarballs/*
+          tag_name: tcl
+          body: |
+            This is a release of all final major versions of Tcl for Linux 64 and 32 bits.
+          draft: false
