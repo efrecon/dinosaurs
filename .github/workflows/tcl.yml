@@ -17,6 +17,8 @@ jobs:
         architecture:
           - linux-x86_64
           - linux-i386
+        # These are the latest of the major versions according to
+        # https://www.tcl.tk/software/tcltk/choose.html
         version:
           - "8.0.5"
           - "8.1.1"
@@ -24,6 +26,7 @@ jobs:
           - "8.3.5"
           - "8.4.20"
         exclude:
+          # Fails to build on i386 when linking statically
           - architecture: linux-i386
             version: "8.3.5"
     steps:
@@ -53,3 +56,4 @@ jobs:
         with:
           name: tcl${{ matrix.version }}-${{ matrix.architecture }}.tar.gz
           path: ${{ steps.pack.outputs.TARBALL }}
+          retention-days: 7
