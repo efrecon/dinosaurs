@@ -66,11 +66,13 @@ jobs:
         uses: actions/download-artifact@v2
       - name: Create release
         id: release
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         with:
-          files: |
-            **/*.tar.gz
-          name: tcl
+          artifacts: "*.tar.gz"
+          allowUpdates: 'true'
           body: |
             This is a release of all final major versions of Tcl for Linux 64 and 32 bits.
-          draft: false
+          commit: ${{ github.ref }}
+          name: Tcl
+          tag: tcl
+          replacesArtifacts: 'true'
