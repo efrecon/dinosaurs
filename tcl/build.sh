@@ -18,60 +18,12 @@ ARCHITECTURE=${ARCHITECTURE:-"$(uname -s | tolower)-$(uname -m | tolower)"}
 # Shared or static libraries?
 SHARED=${SHARED:-"1"}
 
-# This uses the comments behind the options to show the help. Not extremly
-# correct, but effective and simple.
-# shellcheck disable=SC2120
-usage() {
-  echo "$0 builds Tcl using Docker" && \
-    grep -E "[[:space:]]+-.+)[[:space:]]+#" "$0" |
-    sed 's/#//' |
-    sed -r 's/([a-z])\)/\1/'
-  exit "${1:-0}"
-}
+# shellcheck disable=SC2034 # Variable used in lib/options.sh
+USAGE="builds Tcl using Docker"
+. "$(dirname "$0")/../lib/options.sh"
 
-while [ $# -gt 0 ]; do
-  case "$1" in
-    -v | --version) # The version of Tcl to build (also used for specifying the default directories)
-      VERSION=$2; shift 2;;
-    --version=*)
-      VERSION="${1#*=}"; shift 1;;
-
-    -d | --dest | --destination) # The destination directory.
-      DESTINATION=$2; shift 2;;
-    --dest=* | --destination=*)
-      DESTINATION="${1#*=}"; shift 1;;
-
-    -s | --src | --source) # The source directory.
-      SOURCE=$2; shift 2;;
-    --src=* | --source=*)
-      SOURCE="${1#*=}"; shift 1;;
-
-    --shared)   # Force building of shared libraries if possible
-      SHARED=1; shift 1;;
-    --shared=*)
-      SHARED="${1#*=}"; shift 1;;
-
-    --static)   # Force building of static libraries if possible
-      SHARED=0; shift 1;;
-
-    -a | --arch | --architecture) # The architecture to build for.
-      ARCHITECTURE=$2; shift 2;;
-    --arch=* | --architecture=*)
-      ARCHITECTURE="${1#*=}"; shift 1;;
-
-    -h | --help) # Show the help.
-      usage;;
-
-    --) shift; break;;
-
-    -*) echo "Unknown option: $1" >&2; exit 1;;
-
-    *) break;;
-  esac
-done
-
-[ -z "$SOURCE" ] && SOURCE="$(pwd)/tcl${VERSION}"
-[ -z "$DESTINATION" ] && DESTINATION="$(pwd)/${ARCHITECTURE}/tcl${VERSION}"
+[ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/tcl${VERSION}"
+[ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${ARCHITECTURE}/tcl${VERSION}"
 
 mkdir -p "$DESTINATION"
 
@@ -80,7 +32,7 @@ docker image build -f "$(dirname "$0")/Dockerfile" \
   --build-arg "SOURCE=${SOURCE}" \
   --build-arg "DESTINATION=${DESTINATION}" \
   -t "tcl${VERSION}-${ARCHITECTURE}" \
-  "$(dirname "$0")"
+  "$(dirname "$0")/.."
 docker run --rm \
   -u "$(id -u):$(id -g)" \
   -v "${DESTINATION}:/dist" \
