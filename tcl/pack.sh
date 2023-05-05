@@ -20,16 +20,9 @@ ARCHITECTURE=${ARCHITECTURE:-"$(architecture)"}
 USAGE="Package Tcl binaries into a directory"
 . "$(dirname "$0")/../lib/options.sh"
 
+# Default source and destination directories when empty, i.e. not set in options
 [ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/${ARCHITECTURE}/tcl${VERSION}"
 [ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${ARCHITECTURE}"
 
-mkdir -p "$DESTINATION"
-DESTFILE=${DESTINATION}/tcl${VERSION}-${ARCHITECTURE}.tar.gz
-
-# Prints the name of the file on success.
-if tar \
-    -C "$(dirname "$SOURCE")" \
-    -czf "$DESTFILE" \
-    "$(basename "$SOURCE")"; then
-  printf %s\\n "$DESTFILE"
-fi
+# Package into a tarball
+. "$(dirname "$0")/../lib/tar.sh"

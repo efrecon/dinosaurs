@@ -22,24 +22,11 @@ SHARED=${SHARED:-"1"}
 USAGE="builds Tcl using Docker"
 . "$(dirname "$0")/../lib/options.sh"
 
-[ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/tcl${VERSION}"
-[ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${ARCHITECTURE}/tcl${VERSION}"
+IMG_BASE=tcl;  # This matches the name of the project at GitHub, see fetch.sh
 
-mkdir -p "$DESTINATION"
+# Set source and destination directories when empty, i.e. not set in options
+[ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/${IMG_BASE}${VERSION}"
+[ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
-docker image build -f "$(dirname "$0")/docker/Dockerfile" \
-  --build-arg "VERSION=${VERSION}" \
-  --build-arg "SOURCE=${SOURCE}" \
-  --build-arg "DESTINATION=${DESTINATION}" \
-  -t "tcl${VERSION}-${ARCHITECTURE}" \
-  "$(dirname "$0")/.."
-docker run --rm \
-  -u "$(id -u):$(id -g)" \
-  -v "${DESTINATION}:/dist" \
-  -v "${SOURCE}:/src" \
-  -w /src \
-  "tcl${VERSION}-${ARCHITECTURE}" \
-    --source "/src" \
-    --destination /dist \
-    --arch "$ARCHITECTURE" \
-    --shared="$SHARED"
+# Build using the Dockerfile from under the docker sub-directory
+. "$(dirname "$0")/../lib/docker.sh"

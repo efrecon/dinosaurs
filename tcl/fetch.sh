@@ -11,24 +11,17 @@ VERSION=${VERSION:-"8.0.5"}
 # the version number when empty.
 DESTINATION=${DESTINATION:-""}
 
+# shellcheck disable=SC2034 # Variable used in lib/github.sh
+GITHUB_PRJ="tcltk/tcl"
+
 # shellcheck disable=SC2034 # Variable used in lib/options.sh
 USAGE="downloads Tcl into a directory"
 . "$(dirname "$0")/../lib/options.sh"
 
+# Set default destination directory when empty, i.e. not set in options
 [ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/tcl${VERSION}"
-GIT_TAG="core-$(printf %s\\n "$VERSION" | tr . -)"
-TCL_URL="https://github.com/tcltk/tcl/archive/refs/tags/${GIT_TAG}.tar.gz"
+# shellcheck disable=SC2034 # Variable used in lib/github.sh
+GITHUB_TAG="core-$(printf %s\\n "$VERSION" | tr . -)"
 
-# Download the tarball and extract it to another temporary directory.
-dwdir=$(mktemp -d)
-download "$TCL_URL" "$dwdir/tcl.tar.gz"
-tardir=$(mktemp -d)
-mkdir -p "$tardir"
-tar -xzf "$dwdir/tcl.tar.gz" -C "$tardir"
-
-# Create the destination directory and copy the contents of the tarball to it.
-mkdir -p "$DESTINATION"
-tar -C "${tardir}/tcl-${GIT_TAG}" -cf - . | tar -C "$DESTINATION" -xf -
-
-# Cleanup.
-rm -rf "$dwdir" "$tardir"
+# Download at the git tag computed above from GitHub
+. "$(dirname "$0")/../lib/github.sh"
