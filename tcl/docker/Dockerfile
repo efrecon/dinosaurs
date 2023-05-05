@@ -7,6 +7,6 @@ RUN sed s/archive/old-releases/g /etc/apt/sources.list > /tmp/sources.list && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential autoconf gcc-multilib
 
 COPY lib/*.sh /usr/local/share/
-COPY tcl/entrypoint.sh /usr/local/bin/
+COPY tcl/docker/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

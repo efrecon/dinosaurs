@@ -27,7 +27,7 @@ USAGE="builds Tcl using Docker"
 
 mkdir -p "$DESTINATION"
 
-docker image build -f "$(dirname "$0")/Dockerfile" \
+docker image build -f "$(dirname "$0")/docker/Dockerfile" \
   --build-arg "VERSION=${VERSION}" \
   --build-arg "SOURCE=${SOURCE}" \
   --build-arg "DESTINATION=${DESTINATION}" \
