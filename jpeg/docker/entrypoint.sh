@@ -24,7 +24,7 @@ case "$ARCHITECTURE" in
     CFLAGS="-m64" ./configure --enable-gcc --prefix="$DESTINATION"
     ;;
   linux-i?86)
-    CFLAGS="-m32" ./configure --enable-gcc --prefix="$DESTINATION"
+    CFLAGS="-m32" LDFLAGS="-m32" ./configure --enable-gcc --prefix="$DESTINATION"
     ;;
   *)
     echo "Unsupported architecture: $ARCHITECTURE" >&2
