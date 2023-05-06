@@ -1,0 +1,80 @@
+name: jpeg
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "jpeg/**"
+      - ".github/workflows/jpeg.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture:
+          - linux-x86_64
+          - linux-i386
+        version:
+          - "6b"
+          - "7"
+          - "8d"
+          - "9e"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download jpeg
+        id: download
+        run: |
+          ./jpeg/fetch.sh \
+            --version "${{ matrix.version }}"
+      - name: Build jpeg
+        id: build
+        run: |
+          ./jpeg/build.sh \
+            --version "${{ matrix.version }}" \
+            --architecture "${{ matrix.architecture }}"
+      - name: Pack jpeg
+        id: pack
+        run: |
+          printf "TARBALL=%s\n" \
+            "$(./jpeg/pack.sh \
+                --version "${{ matrix.version }}" \
+                --architecture "${{ matrix.architecture }}")" >> "$GITHUB_OUTPUT"
+      - name: Upload jpeg
+        id: upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: jpeg${{ matrix.version }}-${{ matrix.architecture }}
+          path: ${{ steps.pack.outputs.TARBALL }}
+          retention-days: 7
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.1
+        with:
+          tag_name: jpeg
+          delete_release: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+      - name: Collect tarballs
+        run: |
+          find . -name "*.tar.gz" -exec mv \{\} . \;
+      - name: Create release
+        id: release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "*.tar.gz"
+          allowUpdates: true
+          body: |
+            This is a release of all final minor versions of jpeg for Linux 64 and 32 bits.
+          commit: ${{ github.ref }}
+          name: jpeg
+          tag: jpeg
+          replacesArtifacts: true
