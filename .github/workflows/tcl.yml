@@ -62,6 +62,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Delete old release
         uses: dev-drprasad/delete-tag-and-release@v0.2.1
         with:
@@ -80,8 +81,7 @@ jobs:
         with:
           artifacts: "*.tar.gz"
           allowUpdates: true
-          body: |
-            This is a release of all final minor versions of Tcl for Linux 64 and 32 bits.
+          bodyFile: ./tcl/README.md
           commit: ${{ github.ref }}
           name: Tcl
           tag: tcl

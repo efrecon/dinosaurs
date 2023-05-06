@@ -15,8 +15,11 @@ DESTINATION=${DESTINATION:-""}
 USAGE="downloads libJPEG into a directory"
 . "$(dirname "$0")/../lib/options.sh"
 
+# Internal project name, named after the directory this script is in
+PROJECT=$(basename "$(dirname "$0")")
+
 # Set default destination directory when empty, i.e. not set in options
-[ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/$(dirname "$0")${VERSION}"
+[ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${PROJECT}${VERSION}"
 # shellcheck disable=SC2034 # Variable used in lib/tarurl.sh
 TARURL="http://ijg.org/files/jpegsrc.v${VERSION}.tar.gz"
 

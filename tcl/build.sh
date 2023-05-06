@@ -22,7 +22,7 @@ SHARED=${SHARED:-"1"}
 USAGE="builds Tcl using Docker"
 . "$(dirname "$0")/../lib/options.sh"
 
-IMG_BASE=tcl;  # This matches the name of the project at GitHub, see fetch.sh
+IMG_BASE=$(basename "$(dirname "$0")");
 
 # Set source and destination directories when empty, i.e. not set in options
 [ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/${IMG_BASE}${VERSION}"

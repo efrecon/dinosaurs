@@ -31,10 +31,16 @@ case "$ARCHITECTURE" in
     exit 1
     ;;
 esac
+
+# Build
 make
+
+# Create all destination directories and install, including libraries.
 mkdir -p "${DESTINATION}/bin" "${DESTINATION}/include" "${DESTINATION}/lib" "${DESTINATION}/man/man1"
 make install
 if grep -q '^install-lib:' Makefile; then
   make install-lib
 fi
+
+# Cleanup most of the source code
 make distclean

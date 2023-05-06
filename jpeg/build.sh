@@ -19,7 +19,8 @@ ARCHITECTURE=${ARCHITECTURE:-"$(architecture)"}
 USAGE="builds libJPEG using Docker"
 . "$(dirname "$0")/../lib/options.sh"
 
-IMG_BASE=jpeg;
+# Internal project name, named after the directory this script is in
+IMG_BASE=$(basename "$(dirname "$0")");
 
 # Set source and destination directories when empty, i.e. not set in options
 [ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/${IMG_BASE}${VERSION}"

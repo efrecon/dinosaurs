@@ -15,9 +15,8 @@
 # script.
 [ -z "${GITHUB_PRJ:-}" ] && printf "You must set GITHUB_PRJ variable!" && exit 1
 
-# By default that name of the tar file will be the name of the project, but you
-# can specify a different name.
-GITHUB_NAME=${GITHUB_NAME:-"$(basename "$GITHUB_PRJ")"}
+# By default that name of the tar file will be the name of the internal project
+GITHUB_NAME=${GITHUB_NAME:-"$(basename "$(dirname "$0")")"}
 
 # This is the GitHub URL to fetch the tarball from.
 GITHUB_URL="https://github.com/${GITHUB_PRJ}/archive/refs/tags/${GITHUB_TAG}.tar.gz"

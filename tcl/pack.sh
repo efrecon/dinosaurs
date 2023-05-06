@@ -20,8 +20,11 @@ ARCHITECTURE=${ARCHITECTURE:-"$(architecture)"}
 USAGE="Package Tcl binaries into a directory"
 . "$(dirname "$0")/../lib/options.sh"
 
+# Internal project name, named after the directory this script is in
+PROJECT=$(basename "$(dirname "$0")")
+
 # Default source and destination directories when empty, i.e. not set in options
-[ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/${ARCHITECTURE}/tcl${VERSION}"
+[ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/${ARCHITECTURE}/${PROJECT}${VERSION}"
 [ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${ARCHITECTURE}"
 
 # Package into a tarball

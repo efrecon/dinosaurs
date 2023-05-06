@@ -5,8 +5,9 @@
 # that are set (to defaults) by the inlining script, options will be recognised,
 # parsed and set those variables
 
-# Root directory to construct the paths from. Will default to the current
-ROOTDIR=${ROOTDIR:-$(pwd)}
+# Root directory to construct the paths from. Defaults to the output directory
+# under the root of the whole project.
+ROOTDIR=${ROOTDIR:-"$(dirname "$(dirname "$0")")/output"}
 
 unknown() { printf "Unknown option: %s\\n" "$1" >&2; usage 1 >&2; }
 
