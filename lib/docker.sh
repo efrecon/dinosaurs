@@ -22,6 +22,13 @@ docker image build -f "$(dirname "$0")/docker/Dockerfile" \
   --build-arg "DESTINATION=${DESTINATION}" \
   -t "$IMG_NAME" \
   "$(dirname "$0")/.."
+
+FLAGS=
+if [ "${SHARED:-}" = "0" ]; then
+  FLAGS=--static
+elif [ "${SHARED:-}" = "1" ]; then
+  FLAGS=--shared
+fi
 docker run --rm \
   -u "$(id -u):$(id -g)" \
   -v "${DESTINATION}:/dist" \
@@ -31,4 +38,4 @@ docker run --rm \
     --source "/src" \
     --destination /dist \
     --arch "$ARCHITECTURE" \
-    --shared="$SHARED"
+    $FLAGS
