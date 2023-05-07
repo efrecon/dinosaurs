@@ -18,7 +18,7 @@ tolower() { tr '[:upper:]' '[:lower:]'; }
 
 architecture() { printf %s-%s\\n "$(uname -s | tolower)" "$(uname -m | tolower)"; }
 
-if_sudo() (
+if_sudo() {
   if [ "$(id -u)" -ne "0" ]; then
     SUDO=$(command -v sudo 2>/dev/null)
     if ! [ -x "$SUDO" ]; then
@@ -26,8 +26,8 @@ if_sudo() (
       exit 1
     fi
 
-    exec "$SUDO" "$@"
+    "$SUDO" "$@"
   else
-    exec "$@"
+    "$@"
   fi
-)
+}
