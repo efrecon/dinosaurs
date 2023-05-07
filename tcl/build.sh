@@ -31,5 +31,22 @@ IMG_BASE=$(basename "$(dirname "$0")");
 [ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/${IMG_BASE}${VERSION}"
 [ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
-# Build using the Dockerfile from under the docker sub-directory
-. "$(dirname "$0")/../share/dinosaurs/docker.sh"
+if [ "$DOCKER" = "1" ]; then
+  # Build using the Dockerfile from under the docker sub-directory
+  . "$(dirname "$0")/../share/dinosaurs/docker.sh"
+else
+  "$(dirname "$0")/docker/dependencies.sh"
+
+  mkdir -p "$DESTINATION"
+  FLAGS=
+  if [ "${SHARED:-}" = "0" ]; then
+    FLAGS=--static
+  elif [ "${SHARED:-}" = "1" ]; then
+    FLAGS=--shared
+  fi
+  "$(dirname "$0")/docker/entrypoint.sh" \
+    --source "$SOURCE" \
+    --destination "$(readlink_f "$DESTINATION")" \
+    --arch "$ARCHITECTURE" \
+    $FLAGS
+fi
