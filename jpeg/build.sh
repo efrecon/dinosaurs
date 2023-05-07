@@ -43,8 +43,8 @@ else
     FLAGS=--shared
   fi
   "$(dirname "$0")/docker/entrypoint.sh" \
-    --source "/src" \
-    --destination /dist \
+    --source "$SOURCE" \
+    --destination "$DESTINATION" \
     --arch "$ARCHITECTURE" \
     $FLAGS
 fi
