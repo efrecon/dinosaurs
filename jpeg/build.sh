@@ -34,6 +34,17 @@ if [ "$DOCKER" = "1" ]; then
   . "$(dirname "$0")/../share/dinosaurs/docker.sh"
 else
   "$(dirname "$0")/docker/dependencies.sh"
-  set
-  "$(dirname "$0")/docker/entrypoint.sh"
+
+  mkdir -p "$DESTINATION"
+  FLAGS=
+  if [ "${SHARED:-}" = "0" ]; then
+    FLAGS=--static
+  elif [ "${SHARED:-}" = "1" ]; then
+    FLAGS=--shared
+  fi
+  "$(dirname "$0")/docker/entrypoint.sh" \
+    --source "/src" \
+    --destination /dist \
+    --arch "$ARCHITECTURE" \
+    $FLAGS
 fi

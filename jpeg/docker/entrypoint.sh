@@ -18,7 +18,7 @@ USAGE="builds libJPEG on UNIX"
 # shellcheck source=../../share/dinosaurs/options.sh
 . "$(dirname "$0")/../share/dinosaurs/options.sh"
 
-cd "${SOURCE}"; pwd
+cd "${SOURCE}"
 case "$ARCHITECTURE" in
   linux-x86_64)
     CFLAGS="-m64" ./configure --enable-gcc --prefix="$DESTINATION"
