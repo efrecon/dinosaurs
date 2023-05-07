@@ -34,5 +34,6 @@ if [ "$DOCKER" = "1" ]; then
   . "$(dirname "$0")/../share/dinosaurs/docker.sh"
 else
   "$(dirname "$0")/docker/dependencies.sh"
+  set
   "$(dirname "$0")/docker/entrypoint.sh"
 fi
