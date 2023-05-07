@@ -44,7 +44,7 @@ else
   fi
   "$(dirname "$0")/docker/entrypoint.sh" \
     --source "$SOURCE" \
-    --destination "$DESTINATION" \
+    --destination "$(readlink_f "$DESTINATION")" \
     --arch "$ARCHITECTURE" \
     $FLAGS
 fi
