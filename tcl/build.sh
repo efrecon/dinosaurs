@@ -18,6 +18,9 @@ ARCHITECTURE=${ARCHITECTURE:-"$(architecture)"}
 # Shared or static libraries?
 SHARED=${SHARED:-"1"}
 
+# Build using Docker when set to 1
+DOCKER=${DOCKER:-"1"}
+
 # shellcheck disable=SC2034 # Variable used in share/dinosaurs/options.sh
 USAGE="builds Tcl using Docker"
 . "$(dirname "$0")/../share/dinosaurs/options.sh"

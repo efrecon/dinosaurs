@@ -35,7 +35,8 @@ jobs:
         run: |
           ./jpeg/build.sh \
             --version "${{ matrix.version }}" \
-            --architecture "${{ matrix.architecture }}"
+            --architecture "${{ matrix.architecture }}" \
+            --host
       - name: Pack jpeg
         id: pack
         run: |
