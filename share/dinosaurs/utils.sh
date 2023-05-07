@@ -50,3 +50,25 @@ repoint_sources_list() {
       ;;
   esac
 }
+
+is_abspath() {
+  case "$1" in
+    /* | ~*) true;;
+    *) false;;
+  esac
+}
+
+# This is the same as readlink -f, which does not exist on MacOS
+readlink_f() {
+  if [ -d "$1" ]; then
+    ( cd -P -- "$1" && pwd -P )
+  elif [ -L "$1" ]; then
+    if is_abspath "$(readlink "$1")"; then
+      readlink_f "$(readlink "$1")"
+    else
+      readlink_f "$(dirname "$1")/$(readlink "$1")"
+    fi
+  else
+    printf %s\\n "$(readlink_f "$(dirname "$1")")/$(basename "$1")"
+  fi
+}
