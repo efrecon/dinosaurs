@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -eu
 
 # shellcheck source=../../lib/utils.sh
 . "$(dirname "$0")/../share/utils.sh"

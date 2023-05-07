@@ -1,8 +1,8 @@
 #!/bin/sh
 
-set -e
+set -eu
 
-. "$(dirname "$0")/../lib/utils.sh"
+. "$(dirname "$0")/../share/dinosaurs/utils.sh"
 
 # Version of Tcl to fetch. Will be converted to a git tag.
 VERSION=${VERSION:-"6b"}
@@ -15,9 +15,9 @@ SOURCE=${SOURCE:-""}
 # Architecture to build for. Will default to the current one.
 ARCHITECTURE=${ARCHITECTURE:-"$(architecture)"}
 
-# shellcheck disable=SC2034 # Variable used in lib/options.sh
+# shellcheck disable=SC2034 # Variable used in share/dinosaurs/options.sh
 USAGE="builds libJPEG using Docker"
-. "$(dirname "$0")/../lib/options.sh"
+. "$(dirname "$0")/../share/dinosaurs/options.sh"
 
 # Internal project name, named after the directory this script is in
 IMG_BASE=$(basename "$(dirname "$0")");
@@ -27,4 +27,4 @@ IMG_BASE=$(basename "$(dirname "$0")");
 [ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
 # Build using the Dockerfile from under the docker sub-directory
-. "$(dirname "$0")/../lib/docker.sh"
+. "$(dirname "$0")/../share/dinosaurs/docker.sh"
