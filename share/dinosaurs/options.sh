@@ -37,6 +37,14 @@ usage() {
     printf "  --static\\n"
     printf "\\tForce building static libraries if possible.\\n"
   fi
+  if [ -n "${DOCKER+unset}" ]; then
+    printf "  --docker (=0/1)\\n"
+    printf "\\tForce building with Docker. When value passed, boolean for docker/host\\n"
+  fi
+  if [ -n "${DOCKER+unset}" ]; then
+    printf "  --host\\n"
+    printf "\\tForce building on the host.\\n"
+  fi
   if [ -n "${ARCHITECTURE+unset}" ]; then
     printf "  -a, --arch, --architecture\\n"
     printf "\\tArchitecture to build for, a dash separated pair, e.g. linux-i386\\n"
@@ -113,6 +121,29 @@ while [ $# -gt 0 ]; do
         unknown "$1"
       else
         SHARED=0; shift 1;
+      fi
+      ;;
+
+    --docker)   # Force building with docker
+      if [ -z "${DOCKER+unset}" ]; then
+        unknown "$1"
+      else
+        DOCKER=1; shift 1;
+      fi
+      ;;
+    --docker=*)
+      if [ -z "${DOCKER+unset}" ]; then
+        unknown "${1%=*}"
+      else
+        DOCKER="${1#*=}"; shift 1;
+      fi
+      ;;
+
+    --host)   # Force building directly on host
+      if [ -z "${DOCKER+unset}" ]; then
+        unknown "$1"
+      else
+        DOCKER=0; shift 1;
       fi
       ;;
 

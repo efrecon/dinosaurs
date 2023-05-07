@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - "feature/*"
     paths:
       - "jpeg/**"
       - ".github/workflows/jpeg.yml"
@@ -34,7 +35,8 @@ jobs:
         run: |
           ./jpeg/build.sh \
             --version "${{ matrix.version }}" \
-            --architecture "${{ matrix.architecture }}"
+            --architecture "${{ matrix.architecture }}" \
+            --host
       - name: Pack jpeg
         id: pack
         run: |
@@ -53,6 +55,7 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v3
       - name: Delete old release

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-set -e
+set -eu
 
-. "$(dirname "$0")/../lib/utils.sh"
+. "$(dirname "$0")/../share/dinosaurs/utils.sh"
 
 # Version of libjpeg to fetch. Will be converted to a git tag.
 VERSION=${VERSION:-"6b"}
@@ -11,17 +11,17 @@ VERSION=${VERSION:-"6b"}
 # the version number when empty.
 DESTINATION=${DESTINATION:-""}
 
-# shellcheck disable=SC2034 # Variable used in lib/options.sh
+# shellcheck disable=SC2034 # Variable used in share/dinosaurs/options.sh
 USAGE="downloads libJPEG into a directory"
-. "$(dirname "$0")/../lib/options.sh"
+. "$(dirname "$0")/../share/dinosaurs/options.sh"
 
 # Internal project name, named after the directory this script is in
 PROJECT=$(basename "$(dirname "$0")")
 
 # Set default destination directory when empty, i.e. not set in options
 [ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${PROJECT}${VERSION}"
-# shellcheck disable=SC2034 # Variable used in lib/tarurl.sh
+# shellcheck disable=SC2034 # Variable used in share/dinosaurs/tarurl.sh
 TARURL="http://ijg.org/files/jpegsrc.v${VERSION}.tar.gz"
 
 # Download from the IJG website
-. "$(dirname "$0")/../lib/tarurl.sh"
+. "$(dirname "$0")/../share/dinosaurs/tarurl.sh"

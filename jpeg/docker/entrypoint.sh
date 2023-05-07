@@ -1,9 +1,9 @@
 #!/bin/sh
 
-set -e
+set -eu
 
-# shellcheck source=../../lib/utils.sh
-. "$(dirname "$0")/../share/utils.sh"
+# shellcheck source=../../share/dinosaurs/utils.sh
+. "$(dirname "$0")/../share/dinosaurs/utils.sh"
 
 # Destination directory. Will default to a subdirectory of the current, carrying
 # the version number when empty.
@@ -13,10 +13,10 @@ SOURCE=${SOURCE:-"/usr/local/src"}
 # Architecture to build for. Will default to the current one.
 ARCHITECTURE=${ARCHITECTURE:-"$(uname -s | tolower)-$(uname -m | tolower)"}
 
-# shellcheck disable=SC2034 # Variable used in lib/options.sh
+# shellcheck disable=SC2034 # Variable used in share/dinosaurs/options.sh
 USAGE="builds libJPEG on UNIX"
-# shellcheck source=../../lib/options.sh
-. "$(dirname "$0")/../share/options.sh"
+# shellcheck source=../../share/dinosaurs/options.sh
+. "$(dirname "$0")/../share/dinosaurs/options.sh"
 
 cd "${SOURCE}"
 case "$ARCHITECTURE" in
