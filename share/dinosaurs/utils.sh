@@ -31,3 +31,22 @@ if_sudo() {
     "$@"
   fi
 }
+
+os_version() (
+  . /etc/os-release
+  printf %s\\n "$VERSION_ID"
+)
+
+repoint_sources_list() {
+  case "$(os_version)" in
+    14.04* | 16.04* | 18.04* | 2?.04*)
+      ;;  # Modern LTS Ubuntu do nothing
+    2[2-9].*)
+      ;;  # Modern Ubuntu, do nothing
+    *)
+      SRC_LIST=$(mktemp)
+      sed s/archive/old-releases/g /etc/apt/sources.list > "$SRC_LIST"
+      if_sudo mv "$SRC_LIST" /etc/apt/sources.list
+      ;;
+  esac
+}
