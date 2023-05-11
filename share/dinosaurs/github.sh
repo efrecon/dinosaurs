@@ -31,6 +31,7 @@ tar -xzf "$dwdir/${GITHUB_NAME}.tar.gz" -C "$tardir"
 
 # Create the destination directory and copy the contents of the tarball to it.
 mkdir -p "$DESTINATION"
+verbose "Extracting GitHub snapshot to $DESTINATION"
 tar -C "${tardir}/${GITHUB_NAME}-${GITHUB_TAG}" -cf - . | tar -C "$DESTINATION" -xf -
 
 # Cleanup.

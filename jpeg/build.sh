@@ -30,11 +30,14 @@ IMG_BASE=$(basename "$(dirname "$0")");
 [ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
 if [ "$DOCKER" = "1" ]; then
+  verbose "Building in Docker container and installing into $DESTINATION"
   # Build using the Dockerfile from under the docker sub-directory
   . "$(dirname "$0")/../share/dinosaurs/docker.sh"
 else
+  verbose "Installing dependencies, requires admin privileges"
   "$(dirname "$0")/docker/dependencies.sh"
 
+  verbose "Building and installing into $DESTINATION"
   mkdir -p "$DESTINATION"
   FLAGS=
   if [ "${SHARED:-}" = "0" ]; then
