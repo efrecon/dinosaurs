@@ -20,6 +20,7 @@ tar -xzf "$dwdir/${TARURL_NAME}.tar.gz" -C "$tardir"
 
 # Create the destination directory and copy the contents of the tarball to it.
 mkdir -p "$DESTINATION"
+verbose "Extracting tarball to $DESTINATION"
 tar -C "${tardir}/${TARURL_NAME}-${VERSION}" -cf - . | tar -C "$DESTINATION" -xf -
 
 # Cleanup.

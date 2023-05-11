@@ -1,9 +1,25 @@
 #!/bin/sh
 
+# PML: Poor Man's Logging
+_log() {
+    printf '[%s] [%s] [%s] %s\n' \
+      "$(basename "$0")" \
+      "${2:-LOG}" \
+      "$(date +'%Y%m%d-%H%M%S')" \
+      "${1:-}" \
+      >&2
+}
+# shellcheck disable=SC2015 # We are fine, this is just to never fail
+verbose() { [ "$DINO_VERBOSE" = "1" ] && _log "$1" NFO || true ; }
+warn() { _log "$1" WRN; }
+error() { _log "$1" ERR && exit 1; }
+
+
 # Download the url passed as the first argument to the destination path passed
 # as a second argument. The destination will be the same as the basename of the
 # URL, in the current directory, if omitted.
 download() {
+  verbose "Downloading $1 to ${2:-$(basename "$1")}"
   if command -v curl >/dev/null; then
     curl -sSL -o "${2:-$(basename "$1")}" "$1"
   elif command -v wget >/dev/null; then
