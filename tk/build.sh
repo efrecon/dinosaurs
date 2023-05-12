@@ -84,7 +84,9 @@ else
     --arch "$ARCHITECTURE" \
     --steps "${STEPS:-}" \
     --verbose="$DINO_VERBOSE" \
-    $FLAGS
+    $FLAGS \
+    -- \
+      --with-tcl="${TCLSRC}:${TCLSRC}/unix"
 fi
 
 # If Tcl was built, clean it up
