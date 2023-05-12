@@ -1,4 +1,4 @@
-name: tcl
+name: tk
 
 on:
   workflow_dispatch:
@@ -31,6 +31,8 @@ jobs:
           # Fails to build on i386 when linking statically
           - architecture: linux-i386
             version: "8.3.5"
+          - architecture: linux-x86_64
+            version: "8.4.20"
     steps:
       - uses: actions/checkout@v3
       - name: Download tcl
