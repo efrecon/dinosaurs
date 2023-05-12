@@ -11,7 +11,7 @@ _log() {
 }
 # shellcheck disable=SC2015 # We are fine, this is just to never fail
 verbose() { [ "$DINO_VERBOSE" = "1" ] && _log "$1" NFO || true ; }
-warn() { _log "$1" WRN; }
+warning() { _log "$1" WRN; }
 error() { _log "$1" ERR && exit 1; }
 
 

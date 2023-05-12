@@ -13,25 +13,30 @@ SOURCE=${SOURCE:-"/usr/local/src"}
 # Architecture to build for. Will default to the current one.
 ARCHITECTURE=${ARCHITECTURE:-"$(uname -s | tolower)-$(uname -m | tolower)"}
 
+# Shared or static libraries?
+SHARED=${SHARED:-"1"}
+
 # Compilation steps to run.
 STEPS=${STEPS:-"configure build install clean"}
 
-# shellcheck disable=SC2034 # Variable used in share/dinosaurs/options.sh
-USAGE="builds libJPEG on UNIX"
+# shellcheck disable=SC2034 # Variable used in lib/options.sh
+USAGE="builds Tk on UNIX"
 
 # shellcheck source=../../share/dinosaurs/options.sh
 . "$(dirname "$0")/../share/dinosaurs/options.sh"
 
-cd "${SOURCE}"
+cd "${SOURCE}/unix"
 
 if printf '%s\n' "$STEPS" | grep -q configure; then
-  verbose "Configuring ligJPEG"
+  verbose "Configuring Tk"
+  autoconf
   case "$ARCHITECTURE" in
     linux-x86_64)
-      CFLAGS="-m64" ./configure --enable-gcc --prefix="$DESTINATION" "$@"
+      CFLAGS="-m64" ./configure --enable-gcc --enable-shared="$SHARED" --prefix="$DESTINATION" "$@"
+      set +x
       ;;
     linux-i?86)
-      CFLAGS="-m32" LDFLAGS="-m32" ./configure --enable-gcc --prefix="$DESTINATION" "$@"
+      CFLAGS="-m32" LDFLAGS="-m32" ./configure --enable-gcc --enable-shared="$SHARED" --prefix="$DESTINATION" "$@"
       ;;
     *)
       echo "Unsupported architecture: $ARCHITECTURE" >&2
@@ -39,25 +44,22 @@ if printf '%s\n' "$STEPS" | grep -q configure; then
       ;;
   esac
 fi
-
 if printf '%s\n' "$STEPS" | grep -q build; then
-  verbose "Building libJPEG"
-  # Build
+  verbose "Building Tk"
   make
 fi
-
 if printf '%s\n' "$STEPS" | grep -q install; then
-  verbose "Installing libJPEG"
-  # Create all destination directories and install, including libraries.
-  mkdir -p "${DESTINATION}/bin" "${DESTINATION}/include" "${DESTINATION}/lib" "${DESTINATION}/man/man1"
-  make install
-  if grep -q '^install-lib:' Makefile; then
-    make install-lib
+  verbose "Installing Tk"
+  if [ -f "install-sh" ]; then
+    if ! [ -x "install-sh" ]; then
+      warning "Fixing install-sh permissions"
+      chmod a+x "install-sh"
+    fi
   fi
+  # avoid manuals because they require hard links
+  make install-binaries install-libraries
 fi
-
 if printf '%s\n' "$STEPS" | grep -q clean; then
-  verbose "Cleaning libJPEG"
-  # Cleanup most of the source code
+  verbose "Cleaning Tk"
   make distclean
 fi

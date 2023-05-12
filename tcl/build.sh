@@ -21,6 +21,9 @@ SHARED=${SHARED:-"1"}
 # Build using Docker when set to 1
 DOCKER=${DOCKER:-"1"}
 
+# Compilation steps to run.
+STEPS=${STEPS:-"configure build install clean"}
+
 # shellcheck disable=SC2034 # Variable used in share/dinosaurs/options.sh
 USAGE="builds Tcl using Docker"
 . "$(dirname "$0")/../share/dinosaurs/options.sh"
@@ -51,5 +54,7 @@ else
     --source "$SOURCE" \
     --destination "$(readlink_f "$DESTINATION")" \
     --arch "$ARCHITECTURE" \
+    --steps "${STEPS:-}" \
+    --verbose="$DINO_VERBOSE" \
     $FLAGS
 fi

@@ -44,6 +44,10 @@ usage() {
     printf "  --static\\n"
     printf "\\tForce building static libraries if possible.\\n"
   fi
+  if [ -n "${STEPS+unset}" ]; then
+    printf "  --steps LIST\\n"
+    printf "\\tThe compilation steps to perform, a space-separated list of the following: configure build install clean\\n"
+  fi
   if [ -n "${DOCKER+unset}" ]; then
     printf "  --docker (=0/1)\\n"
     printf "\\tForce building with Docker. When value passed, boolean for docker/host\\n"
@@ -109,6 +113,21 @@ while [ $# -gt 0 ]; do
         unknown "${1%=*}"; shift 1;
       else
         SOURCE="${1#*=}"; shift 1;
+      fi
+      ;;
+
+    --steps) # Compilation steps to perform
+      if [ -z "${STEPS+unset}" ]; then
+        unknown "$1"; shift 2;
+      else
+        STEPS=$2; shift 2;
+      fi
+      ;;
+    --steps=*)
+      if [ -z "${STEPS+unset}" ]; then
+        unknown "${1%=*}"; shift 1;
+      else
+        STEPS="${1#*=}"; shift 1;
       fi
       ;;
 

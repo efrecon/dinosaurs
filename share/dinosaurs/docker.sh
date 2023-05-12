@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # This file is meant to be sourced, not executed. Its behaviour will depend on
-# the presence of some variables.
+# the presence of some variables. NOTE: It DESTROYS the program's argument
+# vector to be able to operate.
 
 [ -z "${DESTINATION:-}" ] && printf "You must set DESTINATION variable!" && exit 1
 [ -z "${SOURCE:-}" ] && printf "You must set SOURCE variable!" && exit 1
@@ -13,9 +14,14 @@ IMG_BASE=${IMG_BASE:-"$(basename "$(dirname "$0")")"}
 # Fully qualified name of the image to build, by default uses a combination of
 # the basename from above, the version and architecture.
 IMG_NAME=${IMG_NAME:-"${IMG_BASE}${VERSION}-${ARCHITECTURE}"}
+# Protected "namespace" inside container under which we will mount local
+# fully resolved directories.
+IMG_NAMESPACE=${IMG_NAMESPACE:-"/opt/dinosaurs/mnt"}
+
 
 mkdir -p "$DESTINATION"
 
+verbose "Building Docker image: $IMG_NAME"
 docker image build -f "$(dirname "$0")/docker/Dockerfile" \
   --build-arg "VERSION=${VERSION}" \
   --build-arg "SOURCE=${SOURCE}" \
@@ -23,19 +29,87 @@ docker image build -f "$(dirname "$0")/docker/Dockerfile" \
   -t "$IMG_NAME" \
   "$(dirname "$0")/.."
 
-FLAGS=
-if [ "${SHARED:-}" = "0" ]; then
-  FLAGS=--static
-elif [ "${SHARED:-}" = "1" ]; then
-  FLAGS=--shared
-fi
-docker run --rm \
+# Use the programs main argument vector to build arguments that will be passed
+# to docker run.
+
+# FIRST STEP: start with the arguments to docker run itself
+abssrc=$(readlink_f "${SOURCE}"); # Resolve the source so we can remap it
+set -- \
+  --rm \
   -u "$(id -u):$(id -g)" \
-  -v "$(readlink_f "${DESTINATION}"):/dist" \
-  -v "$(readlink_f "${SOURCE}"):/src" \
-  -w /src \
+  -v "$(readlink_f "${DESTINATION}"):/usr/local" \
+  -v "$(readlink_f "${SOURCE}"):${IMG_NAMESPACE%/}/${abssrc#/}" \
+  -w "${IMG_NAMESPACE%/}/${abssrc#/}"
+# Dependencies should be written as name of option (without leading double
+# dash), followed by an equal sign and the path to the dependency (no quotes).
+# We remap them inside a directory that we can "own". See below for special case
+# of : in path.
+while IFS='=' read -r optname optpath; do
+  # When the path contains a colon, it is assumed to contain a pair. The first
+  # path is the directory to mount, the second the directory to give to the
+  # option. This allows to mount parent directories of the one that is passed to
+  # the option so they can still be found inside the container.
+  if printf %s\\n "$optpath" | grep -q ':'; then
+    optmnt=$(printf %s\\n "$optpath" | cut -d: -f1)
+    optpath=$(printf %s\\n "$optpath" | cut -d: -f2)
+  else
+    optmnt="$optpath"
+  fi
+
+  # Arrange for Docker mount under namespaced directory if value was path to
+  # file or directory.
+  if [ -e "$optmnt" ]; then
+    optmnt=$(readlink_f "${optmnt}")
+    set -- "$@" -v "${optmnt}:${IMG_NAMESPACE%/}/${optmnt#/}"
+  fi
+done <<EOF
+$(printf %s\\n "${DEPENDENCIES:-}")
+EOF
+
+# SECOND STEP: image name and arguments to the entry point
+set -- "$@" \
   "$IMG_NAME" \
-    --source "/src" \
-    --destination /dist \
+    --source "${IMG_NAMESPACE%/}/${abssrc#/}" \
+    --destination /usr/local \
     --arch "$ARCHITECTURE" \
-    $FLAGS
+    --steps "${STEPS:-}" \
+    --verbose="$DINO_VERBOSE"
+if [ "${SHARED:-}" = "0" ]; then
+  set -- "$@" --static
+elif [ "${SHARED:-}" = "1" ]; then
+  set -- "$@" --shared
+fi
+# Pick the dependencies again, use the same location as where they are remapped.
+if [ -n "${DEPENDENCIES:-}" ]; then
+  # Mark the end of the arguments to the entry point, all further options will
+  # be passed to the build command.
+  set -- "$@" --
+fi
+while IFS='=' read -r optname optpath; do
+  if [ -n "$optname" ]; then
+    if printf %s\\n "$optpath" | grep -q ':'; then
+      optmnt=$(printf %s\\n "$optpath" | cut -d: -f1)
+      optpath=$(printf %s\\n "$optpath" | cut -d: -f2)
+    else
+      optmnt="$optpath"
+    fi
+
+    # If value was path to file or directory, remap it to the namespaced directory
+    # mounted above, otherwise pass it as-is.
+    if [ -e "$optpath" ]; then
+      optpath=$(readlink_f "${optpath}")
+      set -- "$@" --"${optname}=${IMG_NAMESPACE%/}/${optpath#/}"
+      verbose "Passing extra option: --${optname}=${IMG_NAMESPACE%/}/${optpath#/}"
+    else
+      set -- "$@" --"${optname}=${optpath}"
+      verbose "Passing extra option: --${optname}=${optpath}"
+    fi
+  fi
+done <<EOF
+$(printf %s\\n "${DEPENDENCIES:-}")
+EOF
+
+# THIRD STEP: Now we can run to create a container based on the image that we
+# built at the beginning.
+verbose "Running container based on Docker image: $IMG_NAME"
+docker run "$@"

@@ -1,0 +1,102 @@
+name: tk
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - feature/*
+    paths:
+      - "tcl/**"
+      - "tk/**"
+      - ".github/workflows/tk.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture:
+          - linux-x86_64
+          - linux-i386
+        # These are the latest of the major versions according to
+        # https://www.tcl.tk/software/tcltk/choose.html
+        version:
+          - "8.0.5"
+          - "8.1.1"
+          - "8.2.3"
+          - "8.3.5"
+        exclude:
+          # Fails to build on i386 when linking statically
+          - architecture: linux-i386
+            version: "8.3.5"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download tcl
+        id: download-tcl
+        run: |
+          ./tcl/fetch.sh \
+            --version "${{ matrix.version }}"
+      - name: Download tk
+        id: download-tk
+        run: |
+          ./tk/fetch.sh \
+            --version "${{ matrix.version }}"
+      - name: Build tcl
+        id: build-tcl
+        run: |
+          ./tcl/build.sh \
+            --version "${{ matrix.version }}" \
+            --architecture "${{ matrix.architecture }}" \
+            --static
+      - name: Build tk
+        id: build-tk
+        run: |
+          ./tk/build.sh \
+            --version "${{ matrix.version }}" \
+            --architecture "${{ matrix.architecture }}" \
+            --static
+      - name: Pack tk
+        id: pack
+        run: |
+          printf "TARBALL=%s\n" \
+            "$(./tk/pack.sh \
+                --version "${{ matrix.version }}" \
+                --architecture "${{ matrix.architecture }}")" >> "$GITHUB_OUTPUT"
+      - name: Upload tk
+        id: upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: tk${{ matrix.version }}-${{ matrix.architecture }}
+          path: ${{ steps.pack.outputs.TARBALL }}
+          retention-days: 7
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Delete old release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.1
+        with:
+          tag_name: tk
+          delete_release: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+      - name: Collect tarballs
+        run: |
+          find . -name "*.tar.gz" -exec mv \{\} . \;
+      - name: Create release
+        id: release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "*.tar.gz"
+          allowUpdates: true
+          bodyFile: ./tk/README.md
+          commit: ${{ github.ref }}
+          name: Tk
+          tag: tk
+          replacesArtifacts: true
