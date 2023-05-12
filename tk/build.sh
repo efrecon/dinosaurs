@@ -21,6 +21,9 @@ SHARED=${SHARED:-"1"}
 # Build using Docker when set to 1
 DOCKER=${DOCKER:-"1"}
 
+# Compilation steps to run.
+STEPS=${STEPS:-"configure build install clean"}
+
 # shellcheck disable=SC2034 # Variable used in share/dinosaurs/options.sh
 USAGE="builds Tk using Docker"
 . "$(dirname "$0")/../share/dinosaurs/options.sh"
@@ -31,15 +34,36 @@ IMG_BASE=$(basename "$(dirname "$0")");
 [ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/${IMG_BASE}${VERSION}"
 [ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
-TCLROOT=${TCLROOT:-"$(dirname "$DESTINATION")/tcl${VERSION}"}
-if ! [ -d "$TCLROOT" ]; then
-  error "Tcl not found in $TCLROOT"
+# Look for Tcl, build it if not found
+TCLSRC=${TCLSRC:-"$(dirname "$SOURCE")/tcl${VERSION}"}
+if [ -d "$TCLSRC" ]; then
+  verbose "Trying to use Tcl from $TCLSRC"
+else
+  warning "$TCLSRC is not a directory, will fetch it first"
+  "$(dirname "$0")/../tcl/fetch.sh" \
+    --version "$VERSION" \
+    --destination "$TCLSRC" \
+    --verbose="$DINO_VERBOSE"
+fi
+TCLCLEAN=0
+if [ -x "${TCLSRC}/unix/tclsh" ]; then
+  verbose "Found tclsh at ${TCLSRC}/unix/tclsh"
+else
+  warning "${TCLSRC}/unix/tclsh is not executable, will build Tcl first"
+  "$(dirname "$0")/../tcl/build.sh" \
+    --source "$TCLSRC" \
+    --arch "$ARCHITECTURE" \
+    --shared="$SHARED" \
+    --docker="$DOCKER" \
+    --steps "configure build" \
+    --verbose="$DINO_VERBOSE"
+  TCLCLEAN=1
 fi
 
 if [ "$DOCKER" = "1" ]; then
   # shellcheck disable=SC2034 # Variable used in share/dinosaurs/docker.sh
-  DEPENDENCIES="with-tcl=$TCLROOT"
-  verbose "Building in Docker container (tcl at $TCLROOT) and installing into $DESTINATION"
+  DEPENDENCIES="with-tcl=${TCLSRC}:${TCLSRC}/unix"
+  verbose "Building in Docker container (tcl at $TCLSRC) and installing into $DESTINATION"
   # Build using the Dockerfile from under the docker sub-directory
   . "$(dirname "$0")/../share/dinosaurs/docker.sh"
 else
@@ -58,5 +82,18 @@ else
     --source "$SOURCE" \
     --destination "$(readlink_f "$DESTINATION")" \
     --arch "$ARCHITECTURE" \
+    --steps "${STEPS:-}" \
+    --verbose="$DINO_VERBOSE" \
     $FLAGS
+fi
+
+# If Tcl was built, clean it up
+if [ "$TCLCLEAN" ]; then
+  verbose "Cleaning auto-built Tcl"
+  "$(dirname "$0")/../tcl/build.sh" \
+    --source "$TCLSRC" \
+    --arch "$ARCHITECTURE" \
+    --shared="$SHARED" \
+    --docker="$DOCKER" \
+    --steps "clean"
 fi

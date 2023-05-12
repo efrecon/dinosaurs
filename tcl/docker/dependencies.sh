@@ -12,4 +12,4 @@ export DEBIAN_FRONTEND
 repoint_sources_list
 if_sudo apt-get update
 if_sudo apt-get install -y \
-    build-essential autoconf gcc-multilib g++-multilib libc6-dev-i386 libtool
+    build-essential autoconf gcc-multilib libc6-dev-i386 libtool
