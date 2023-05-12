@@ -1,12 +1,12 @@
 FROM ubuntu:10.04
 
 # Install libraries and scripts
-COPY share/dinosaurs/*.sh /usr/local/share/dinosaurs/
-COPY jpeg/docker/*.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/*.sh
+COPY share/dinosaurs/*.sh /opt/dinosaurs/share/dinosaurs/
+COPY jpeg/docker/*.sh /opt/dinosaurs/bin/
+RUN chmod +x /opt/dinosaurs/bin/*.sh
 
 # Install dependencies
-RUN /usr/local/bin/dependencies.sh
+RUN /opt/dinosaurs/bin/dependencies.sh
 
 # Run the entrypoint installed earlier
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/opt/dinosaurs/bin/entrypoint.sh"]
