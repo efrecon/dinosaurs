@@ -20,13 +20,13 @@ jobs:
           - linux-i386
         # These are the latest of the major versions according to
         # https://www.tcl.tk/software/tcltk/choose.html
-        version:
+        version: &versions
           - "8.0.5"
           - "8.1.1"
           - "8.2.3"
           - "8.3.5"
           - "8.4.20"
-        exclude:
+        exclude: &exclusions
           # Fails to build on i386 when linking statically
           - architecture: linux-i386
             version: "8.3.5"
@@ -63,6 +63,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        version: *versions
+        exclude: *exclusions
     steps:
       - uses: actions/checkout@v3
       - name: Delete old release
@@ -76,15 +80,20 @@ jobs:
         uses: actions/download-artifact@v3
       - name: Collect tarballs
         run: |
-          find . -name "*.tar.gz" -exec mv \{\} . \;
+          find . -name "*${{ matrix.version }}.tar.gz" -exec mv \{\} . \;
+      - name: Generate README
+        id: readme
+        run: |
+          VERSION="${{ matrix.version }}"; export VERSION
+          envsubst < ./tcl/RELEASE.md > /tmp/README.md
       - name: Create release
         id: release
         uses: ncipollo/release-action@v1
         with:
           artifacts: "*.tar.gz"
           allowUpdates: true
-          bodyFile: ./tcl/README.md
+          bodyFile: /tmp/README.md
           commit: ${{ github.ref }}
           name: Tcl
-          tag: tcl
+          tag: tcl${{ matrix.version}}
           replacesArtifacts: true
