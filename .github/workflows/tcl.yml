@@ -29,53 +29,8 @@ jobs:
           # Fails to build on i386 when linking statically
           - architecture: linux-i386
             version: "8.3.5"
-    uses: ./.github/workflows/_build.yml
+    uses: ./.github/workflows/_build_n_release.yml
     with:
       project: tcl
       version: ${{ matrix.version }}
       architecture: ${{ matrix.architecture }}
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    strategy:
-      matrix:
-        # Same list as above, no support for YAML anchors in workflows at the
-        # moment.
-        version:
-          - "8.0.5"
-          - "8.1.1"
-          - "8.2.3"
-          - "8.3.5"
-          - "8.4.20"
-    steps:
-      - uses: actions/checkout@v3
-      - name: Delete old release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.1
-        with:
-          tag_name: tcl
-          delete_release: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-      - name: Collect tarballs
-        run: |
-          find . -name "*${{ matrix.version }}*.tar.gz" -exec mv \{\} . \;
-      - name: Generate README
-        id: readme
-        run: |
-          VERSION="${{ matrix.version }}"; export VERSION
-          envsubst < ./tcl/RELEASE.md > /tmp/README.md
-      - name: Create release
-        id: release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "*.tar.gz"
-          allowUpdates: true
-          bodyFile: /tmp/README.md
-          commit: ${{ github.ref }}
-          name: Tcl ${{ matrix.version }}
-          tag: tcl${{ matrix.version}}
-          replacesArtifacts: true
