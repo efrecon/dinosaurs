@@ -48,39 +48,3 @@ jobs:
           name: ${{ inputs.project }}${{ inputs.version }}-${{ inputs.architecture }}
           path: ${{ steps.pack.outputs.TARBALL }}
           retention-days: 7
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Delete old release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.1
-        with:
-          tag_name: ${{ inputs.project }}
-          delete_release: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-      - name: Collect tarballs
-        run: |
-          find . -name "${{ inputs.project }}${{ inputs.version }}*.tar.gz" -exec mv \{\} . \;
-          ls -l *.tar.gz
-      - name: Generate README
-        id: readme
-        run: |
-          VERSION="${{ inputs.version }}"; export VERSION
-          envsubst < ./${{ inputs.project }}/RELEASE.md > /tmp/README.md
-      - name: Create release
-        id: release
-        if: github.ref == 'refs/heads/main'
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "*.tar.gz"
-          allowUpdates: true
-          bodyFile: /tmp/README.md
-          commit: ${{ github.ref }}
-          name: ${{ inputs.project }} ${{ inputs.version }}
-          tag: ${{ inputs.project }}${{ inputs.version}}
-          replacesArtifacts: true
