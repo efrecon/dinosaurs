@@ -56,6 +56,15 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        # Same list as above, no support for YAML anchors in workflows at the
+        # moment.
+        version:
+          - "6b"
+          - "7"
+          - "8d"
+          - "9e"
     steps:
       - uses: actions/checkout@v3
       - name: Delete old release
@@ -69,15 +78,20 @@ jobs:
         uses: actions/download-artifact@v3
       - name: Collect tarballs
         run: |
-          find . -name "*.tar.gz" -exec mv \{\} . \;
+          find . -name "*${{ matrix.version }}*.tar.gz" -exec mv \{\} . \;
+      - name: Generate README
+        id: readme
+        run: |
+          VERSION="${{ matrix.version }}"; export VERSION
+          envsubst < ./jpeg/RELEASE.md > /tmp/README.md
       - name: Create release
         id: release
         uses: ncipollo/release-action@v1
         with:
           artifacts: "*.tar.gz"
           allowUpdates: true
-          bodyFile: ./jpeg/README.md
+          bodyFile: /tmp/README.md
           commit: ${{ github.ref }}
-          name: jpeg
-          tag: jpeg
+          name: jpeg ${{ matrix.version }}
+          tag: jpeg${{ matrix.version }}
           replacesArtifacts: true
