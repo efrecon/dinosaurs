@@ -20,9 +20,6 @@ jobs:
           - linux-i386
         # These are the latest of the major versions
         version:
-          - "0.8"
-          - "0.99"
-          - "0.79"
           - "1.0.9"
           - "1.1.4"
           - "1.2.13"
@@ -41,9 +38,6 @@ jobs:
         # Same list as above, no support for YAML anchors in workflows at the
         # moment.
         version:
-          - "0.8"
-          - "0.99"
-          - "0.79"
           - "1.0.9"
           - "1.1.4"
           - "1.2.13"
