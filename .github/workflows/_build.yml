@@ -1,0 +1,47 @@
+name: Builder
+
+on:
+  workflow_call:
+    inputs:
+      project:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+      architecture:
+        required: true
+        type: string
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download ${{ inputs.project }}
+        id: download
+        run: |
+          ./${{ inputs.project }}/fetch.sh \
+            --version "${{ inputs.version }}"
+      - name: Build ${{ inputs.project }}
+        id: build
+        run: |
+          ./${{ inputs.project }}/build.sh \
+            --version "${{ inputs.version }}" \
+            --architecture "${{ inputs.architecture }}" \
+            --static
+      - name: Pack ${{ inputs.project }}
+        id: pack
+        run: |
+          printf "TARBALL=%s\n" \
+            "$(./${{ inputs.project }}/pack.sh \
+                --version "${{ inputs.version }}" \
+                --architecture "${{ inputs.architecture }}")" >> "$GITHUB_OUTPUT"
+      - name: Upload ${{ inputs.project }}
+        id: upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.project }}${{ inputs.version }}-${{ inputs.architecture }}
+          path: ${{ steps.pack.outputs.TARBALL }}
+          retention-days: 7

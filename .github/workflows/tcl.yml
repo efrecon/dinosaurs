@@ -12,7 +12,6 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         architecture:
@@ -30,34 +29,11 @@ jobs:
           # Fails to build on i386 when linking statically
           - architecture: linux-i386
             version: "8.3.5"
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download tcl
-        id: download
-        run: |
-          ./tcl/fetch.sh \
-            --version "${{ matrix.version }}"
-      - name: Build tcl
-        id: build
-        run: |
-          ./tcl/build.sh \
-            --version "${{ matrix.version }}" \
-            --architecture "${{ matrix.architecture }}" \
-            --static
-      - name: Pack tcl
-        id: pack
-        run: |
-          printf "TARBALL=%s\n" \
-            "$(./tcl/pack.sh \
-                --version "${{ matrix.version }}" \
-                --architecture "${{ matrix.architecture }}")" >> "$GITHUB_OUTPUT"
-      - name: Upload tcl
-        id: upload
-        uses: actions/upload-artifact@v3
-        with:
-          name: tcl${{ matrix.version }}-${{ matrix.architecture }}
-          path: ${{ steps.pack.outputs.TARBALL }}
-          retention-days: 7
+    uses: ./.github/workflows/_build.yml
+    with:
+      project: tcl
+      version: ${{ matrix.version }}
+      architecture: ${{ matrix.architecture }}
 
   release:
     needs: build
