@@ -12,6 +12,9 @@ on:
       architecture:
         required: true
         type: string
+      build-args:
+        required: false
+        type: string
 
 
 jobs:
@@ -30,7 +33,7 @@ jobs:
           ./${{ inputs.project }}/build.sh \
             --version "${{ inputs.version }}" \
             --architecture "${{ inputs.architecture }}" \
-            --static
+            ${{ inputs.build-args }}
       - name: Pack ${{ inputs.project }}
         id: pack
         run: |
