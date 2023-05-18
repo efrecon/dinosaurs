@@ -1,4 +1,5 @@
-FROM ubuntu:10.04
+ARG UBUNTU_VERSION=10.04
+FROM ubuntu:${UBUNTU_VERSION}
 
 # Install libraries and dependency script
 COPY share/dinosaurs/*.sh /opt/dinosaurs/share/dinosaurs/

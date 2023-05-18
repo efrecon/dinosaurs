@@ -51,6 +51,7 @@ if [ -x "${TCLSRC}/unix/tclsh" ]; then
 else
   warning "${TCLSRC}/unix/tclsh is not executable, will build Tcl first"
   "$(dirname "$0")/../tcl/build.sh" \
+    --version "$VERSION" \
     --source "$TCLSRC" \
     --arch "$ARCHITECTURE" \
     --shared="$SHARED" \
@@ -61,6 +62,9 @@ else
 fi
 
 if [ "$DOCKER" = "1" ]; then
+  if [ "$(version "$VERSION")" -ge "$(version "8.4")" ]; then
+    UBUNTU_VERSION=12.04
+  fi
   # shellcheck disable=SC2034 # Variable used in share/dinosaurs/docker.sh
   DEPENDENCIES="with-tcl=${TCLSRC}:${TCLSRC}/unix"
   verbose "Building in Docker container (tcl at $TCLSRC) and installing into $DESTINATION"
@@ -93,6 +97,7 @@ fi
 if [ "$TCLCLEAN" ]; then
   verbose "Cleaning auto-built Tcl"
   "$(dirname "$0")/../tcl/build.sh" \
+    --version "$VERSION" \
     --source "$TCLSRC" \
     --arch "$ARCHITECTURE" \
     --shared="$SHARED" \

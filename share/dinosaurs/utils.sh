@@ -49,8 +49,15 @@ if_sudo() {
 }
 
 os_version() (
-  . /etc/os-release
-  printf %s\\n "$VERSION_ID"
+  if [ -r /etc/os-release ]; then
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    printf %s\\n "$VERSION_ID"
+  elif [ -r /etc/lsb-release ]; then
+    # shellcheck disable=SC1091
+    . /etc/lsb-release
+    printf %s\\n "$DISTRIB_RELEASE"
+  fi
 )
 
 repoint_sources_list() {
@@ -88,3 +95,5 @@ readlink_f() {
     printf %s\\n "$(readlink_f "$(dirname "$1")")/$(basename "$1")"
   fi
 }
+
+version() { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }

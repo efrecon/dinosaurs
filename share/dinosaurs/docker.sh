@@ -22,12 +22,22 @@ IMG_NAMESPACE=${IMG_NAMESPACE:-"/opt/dinosaurs/mnt"}
 mkdir -p "$DESTINATION"
 
 verbose "Building Docker image: $IMG_NAME"
-docker image build -f "$(dirname "$0")/docker/Dockerfile" \
-  --build-arg "VERSION=${VERSION}" \
-  --build-arg "SOURCE=${SOURCE}" \
-  --build-arg "DESTINATION=${DESTINATION}" \
-  -t "$IMG_NAME" \
-  "$(dirname "$0")/.."
+if [ -z "${UBUNTU_VERSION:-}" ]; then
+  docker image build -f "$(dirname "$0")/docker/Dockerfile" \
+    --build-arg "VERSION=${VERSION}" \
+    --build-arg "SOURCE=${SOURCE}" \
+    --build-arg "DESTINATION=${DESTINATION}" \
+    -t "$IMG_NAME" \
+    "$(dirname "$0")/.."
+else
+  docker image build -f "$(dirname "$0")/docker/Dockerfile" \
+    --build-arg "VERSION=${VERSION}" \
+    --build-arg "SOURCE=${SOURCE}" \
+    --build-arg "DESTINATION=${DESTINATION}" \
+    --build-arg "UBUNTU_VERSION=${UBUNTU_VERSION}" \
+    -t "$IMG_NAME" \
+    "$(dirname "$0")/.."
+fi
 
 # Use the programs main argument vector to build arguments that will be passed
 # to docker run.
