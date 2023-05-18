@@ -1,0 +1,47 @@
+name: zlib
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - feature/*
+    paths:
+      - "zlib/**"
+      - ".github/workflows/zlib.yml"
+      - ".github/workflows/_*.yml"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        architecture:
+          - linux-x86_64
+          - linux-i386
+        # These are the latest of the major versions
+        version:
+          - "1.0.9"
+          - "1.1.4"
+          - "1.2.13"
+    uses: ./.github/workflows/_build.yml
+    with:
+      project: zlib
+      version: ${{ matrix.version }}
+      architecture: ${{ matrix.architecture }}
+      build-args: --static
+
+  release:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        # Same list as above, no support for YAML anchors in workflows at the
+        # moment.
+        version:
+          - "1.0.9"
+          - "1.1.4"
+          - "1.2.13"
+    uses: ./.github/workflows/_release.yml
+    with:
+      project: zlib
+      version: ${{ matrix.version }}
