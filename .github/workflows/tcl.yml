@@ -20,7 +20,7 @@ jobs:
           - linux-i386
         # These are the latest of the major versions according to
         # https://www.tcl.tk/software/tcltk/choose.html
-        version: &versions
+        version:
           - "8.0.5"
           - "8.1.1"
           - "8.2.3"
@@ -62,11 +62,16 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     strategy:
       matrix:
-        version: *versions
-        exclude: *exclusions
+        # Same list as above, no support for YAML anchors in workflows at the
+        # moment.
+        version:
+          - "8.0.5"
+          - "8.1.1"
+          - "8.2.3"
+          - "8.3.5"
+          - "8.4.20"
     steps:
       - uses: actions/checkout@v3
       - name: Delete old release
@@ -87,6 +92,7 @@ jobs:
           VERSION="${{ matrix.version }}"; export VERSION
           envsubst < ./tcl/RELEASE.md > /tmp/README.md
       - name: Create release
+        if: github.ref == 'refs/heads/main'
         id: release
         uses: ncipollo/release-action@v1
         with:
