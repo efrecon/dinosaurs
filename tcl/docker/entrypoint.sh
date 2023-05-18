@@ -2,8 +2,8 @@
 
 set -eu
 
-# shellcheck source=../../share/dinosaurs/utils.sh
-. "$(dirname "$0")/../share/dinosaurs/utils.sh"
+# shellcheck source=../../share/dinosaurs/lib/utils.sh
+. "$(cd "$(dirname "$0")"; pwd -P)/../share/dinosaurs/lib/utils.sh"
 
 # Destination directory. Will default to a subdirectory of the current, carrying
 # the version number when empty.
@@ -11,7 +11,7 @@ DESTINATION=${DESTINATION:-"/usr/local"}
 SOURCE=${SOURCE:-"/usr/local/src"}
 
 # Architecture to build for. Will default to the current one.
-ARCHITECTURE=${ARCHITECTURE:-"$(uname -s | tolower)-$(uname -m | tolower)"}
+ARCHITECTURE=${ARCHITECTURE:-"$(architecture)"}
 
 # Shared or static libraries?
 SHARED=${SHARED:-"1"}
@@ -22,8 +22,8 @@ STEPS=${STEPS:-"configure build install clean"}
 # shellcheck disable=SC2034 # Variable used in lib/options.sh
 USAGE="builds Tcl on UNIX"
 
-# shellcheck source=../../share/dinosaurs/options.sh
-. "$(dirname "$0")/../share/dinosaurs/options.sh"
+# shellcheck source=../../share/dinosaurs/lib/options.sh
+. "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/options.sh"
 
 cd "${SOURCE}/unix"
 

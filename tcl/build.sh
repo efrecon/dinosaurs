@@ -2,7 +2,7 @@
 
 set -eu
 
-. "$(dirname "$0")/../share/dinosaurs/utils.sh"
+. "$(cd "$(dirname "$0")"; pwd -P)/../share/dinosaurs/lib/utils.sh"
 
 # Version of Tcl to fetch. Will be converted to a git tag.
 VERSION=${VERSION:-"8.0.5"}
@@ -24,15 +24,15 @@ DOCKER=${DOCKER:-"1"}
 # Compilation steps to run.
 STEPS=${STEPS:-"configure build install clean"}
 
-# shellcheck disable=SC2034 # Variable used in share/dinosaurs/options.sh
+# shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/options.sh
 USAGE="builds Tcl using Docker"
-. "$(dirname "$0")/../share/dinosaurs/options.sh"
+. "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/options.sh"
 
-IMG_BASE=$(basename "$(dirname "$0")");
+IMG_BASE=$DINO_PROJECT
 
 # Set source and destination directories when empty, i.e. not set in options
-[ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/${IMG_BASE}${VERSION}"
-[ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
+[ -z "$SOURCE" ] && SOURCE="${OUTDIR%/}/${IMG_BASE}${VERSION}"
+[ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
 if [ "$DOCKER" = "1" ]; then
   if [ "$(version "$VERSION")" -ge "$(version "8.4")" ]; then
@@ -40,10 +40,10 @@ if [ "$DOCKER" = "1" ]; then
   fi
   verbose "Building in Docker container and installing into $DESTINATION"
   # Build using the Dockerfile from under the docker sub-directory
-  . "$(dirname "$0")/../share/dinosaurs/docker.sh"
+  . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/docker.sh"
 else
   verbose "Installing dependencies, requires admin privileges"
-  "$(dirname "$0")/docker/dependencies.sh"
+  "$(dirname "$(readlink_f "$0")")/docker/dependencies.sh"
 
   verbose "Building and installing into $DESTINATION"
   mkdir -p "$DESTINATION"
@@ -53,7 +53,7 @@ else
   elif [ "${SHARED:-}" = "1" ]; then
     FLAGS=--shared
   fi
-  "$(dirname "$0")/docker/entrypoint.sh" \
+  "$(dirname "$(readlink_f "$0")")/docker/entrypoint.sh" \
     --source "$SOURCE" \
     --destination "$(readlink_f "$DESTINATION")" \
     --arch "$ARCHITECTURE" \

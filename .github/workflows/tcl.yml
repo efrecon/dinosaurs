@@ -9,10 +9,10 @@ on:
     paths:
       - "tcl/**"
       - ".github/workflows/tcl.yml"
+      - ".github/workflows/_*.yml"
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         architecture:
@@ -30,38 +30,15 @@ jobs:
           # Fails to build on i386 when linking statically
           - architecture: linux-i386
             version: "8.3.5"
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download tcl
-        id: download
-        run: |
-          ./tcl/fetch.sh \
-            --version "${{ matrix.version }}"
-      - name: Build tcl
-        id: build
-        run: |
-          ./tcl/build.sh \
-            --version "${{ matrix.version }}" \
-            --architecture "${{ matrix.architecture }}" \
-            --static
-      - name: Pack tcl
-        id: pack
-        run: |
-          printf "TARBALL=%s\n" \
-            "$(./tcl/pack.sh \
-                --version "${{ matrix.version }}" \
-                --architecture "${{ matrix.architecture }}")" >> "$GITHUB_OUTPUT"
-      - name: Upload tcl
-        id: upload
-        uses: actions/upload-artifact@v3
-        with:
-          name: tcl${{ matrix.version }}-${{ matrix.architecture }}
-          path: ${{ steps.pack.outputs.TARBALL }}
-          retention-days: 7
+    uses: ./.github/workflows/_build.yml
+    with:
+      project: tcl
+      version: ${{ matrix.version }}
+      architecture: ${{ matrix.architecture }}
+      build-args: --static
 
   release:
     needs: build
-    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     strategy:
       matrix:
@@ -73,33 +50,7 @@ jobs:
           - "8.2.3"
           - "8.3.5"
           - "8.4.20"
-    steps:
-      - uses: actions/checkout@v3
-      - name: Delete old release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.1
-        with:
-          tag_name: tcl
-          delete_release: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-      - name: Collect tarballs
-        run: |
-          find . -name "*${{ matrix.version }}*.tar.gz" -exec mv \{\} . \;
-      - name: Generate README
-        id: readme
-        run: |
-          VERSION="${{ matrix.version }}"; export VERSION
-          envsubst < ./tcl/RELEASE.md > /tmp/README.md
-      - name: Create release
-        id: release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "*.tar.gz"
-          allowUpdates: true
-          bodyFile: /tmp/README.md
-          commit: ${{ github.ref }}
-          name: Tcl ${{ matrix.version }}
-          tag: tcl${{ matrix.version}}
-          replacesArtifacts: true
+    uses: ./.github/workflows/_release.yml
+    with:
+      project: tcl
+      version: ${{ matrix.version }}

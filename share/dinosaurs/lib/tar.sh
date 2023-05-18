@@ -5,7 +5,7 @@
 [ -z "${ARCHITECTURE:-}" ] && printf "You must set ARCHITECTURE variable!" && exit 1
 
 # Basename for the name of the tarball to build when not default.
-TAR_BASE=${TAR_BASE:-"$(basename "$(dirname "$0")")"}
+TAR_BASE=${TAR_BASE:-"$DINO_PROJECT"}
 
 mkdir -p "$DESTINATION"
 DESTFILE=${DESTINATION}/${TAR_BASE}${VERSION}-${ARCHITECTURE}.tar.gz
