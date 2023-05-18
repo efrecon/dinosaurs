@@ -9,6 +9,7 @@ on:
     paths:
       - "tcl/**"
       - ".github/workflows/tcl.yml"
+      - ".github/workflows/_*.yml"
 
 jobs:
   build:
