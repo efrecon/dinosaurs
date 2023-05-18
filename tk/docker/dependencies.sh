@@ -2,8 +2,8 @@
 
 set -eu
 
-# shellcheck source=../../share/dinosaurs/utils.sh
-. "$(dirname "$0")/../share/dinosaurs/utils.sh"
+# shellcheck source=../../share/dinosaurs/lib/utils.sh
+. "$(dirname "$0")/../share/dinosaurs/lib/utils.sh"
 
 # Turn down warnings about non-interactive mode
 DEBIAN_FRONTEND=noninteractive

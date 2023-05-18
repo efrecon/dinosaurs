@@ -2,8 +2,8 @@
 
 set -eu
 
-# shellcheck source=../../share/dinosaurs/utils.sh
-. "$(dirname "$0")/../share/dinosaurs/utils.sh"
+# shellcheck source=../../share/dinosaurs/lib/utils.sh
+. "$(dirname "$0")/../share/dinosaurs/lib/utils.sh"
 
 # Destination directory. Will default to a subdirectory of the current, carrying
 # the version number when empty.
@@ -22,8 +22,8 @@ STEPS=${STEPS:-"configure build install clean"}
 # shellcheck disable=SC2034 # Variable used in lib/options.sh
 USAGE="builds Tcl on UNIX"
 
-# shellcheck source=../../share/dinosaurs/options.sh
-. "$(dirname "$0")/../share/dinosaurs/options.sh"
+# shellcheck source=../../share/dinosaurs/lib/options.sh
+. "$(dirname "$0")/../share/dinosaurs/lib/options.sh"
 
 cd "${SOURCE}/unix"
 

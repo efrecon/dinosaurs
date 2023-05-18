@@ -2,7 +2,7 @@
 
 set -eu
 
-. "$(dirname "$0")/../share/dinosaurs/utils.sh"
+. "$(dirname "$0")/../share/dinosaurs/lib/utils.sh"
 
 # Version of Tcl to fetch. Will be converted to a git tag.
 VERSION=${VERSION:-"8.0.5"}
@@ -11,17 +11,17 @@ VERSION=${VERSION:-"8.0.5"}
 # the version number when empty.
 DESTINATION=${DESTINATION:-""}
 
-# shellcheck disable=SC2034 # Variable used in share/dinosaurs/github.sh
+# shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/github.sh
 GITHUB_PRJ="tcltk/tk"
 
-# shellcheck disable=SC2034 # Variable used in share/dinosaurs/options.sh
+# shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/options.sh
 USAGE="downloads Tk into a directory"
-. "$(dirname "$0")/../share/dinosaurs/options.sh"
+. "$(dirname "$0")/../share/dinosaurs/lib/options.sh"
 
 # Set default destination directory when empty, i.e. not set in options
-[ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/$(dirname "$0")${VERSION}"
-# shellcheck disable=SC2034 # Variable used in share/dinosaurs/github.sh
+[ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/$(dirname "$0")${VERSION}"
+# shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/github.sh
 GITHUB_TAG="core_$(printf %s\\n "$VERSION" | tr . _)"
 
 # Download at the git tag computed above from GitHub
-. "$(dirname "$0")/../share/dinosaurs/github.sh"
+. "$(dirname "$0")/../share/dinosaurs/lib/github.sh"

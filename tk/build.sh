@@ -2,7 +2,7 @@
 
 set -eu
 
-. "$(dirname "$0")/../share/dinosaurs/utils.sh"
+. "$(dirname "$0")/../share/dinosaurs/lib/utils.sh"
 
 # Version of Tcl to fetch. Will be converted to a git tag.
 VERSION=${VERSION:-"8.0.5"}
@@ -24,15 +24,15 @@ DOCKER=${DOCKER:-"1"}
 # Compilation steps to run.
 STEPS=${STEPS:-"configure build install clean"}
 
-# shellcheck disable=SC2034 # Variable used in share/dinosaurs/options.sh
+# shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/options.sh
 USAGE="builds Tk using Docker"
-. "$(dirname "$0")/../share/dinosaurs/options.sh"
+. "$(dirname "$0")/../share/dinosaurs/lib/options.sh"
 
 IMG_BASE=$(basename "$(dirname "$0")");
 
 # Set source and destination directories when empty, i.e. not set in options
-[ -z "$SOURCE" ] && SOURCE="${ROOTDIR%/}/${IMG_BASE}${VERSION}"
-[ -z "$DESTINATION" ] && DESTINATION="${ROOTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
+[ -z "$SOURCE" ] && SOURCE="${OUTDIR%/}/${IMG_BASE}${VERSION}"
+[ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
 # Look for Tcl, build it if not found
 TCLSRC=${TCLSRC:-"$(dirname "$SOURCE")/tcl${VERSION}"}
@@ -65,11 +65,11 @@ if [ "$DOCKER" = "1" ]; then
   if [ "$(version "$VERSION")" -ge "$(version "8.4")" ]; then
     UBUNTU_VERSION=12.04
   fi
-  # shellcheck disable=SC2034 # Variable used in share/dinosaurs/docker.sh
+  # shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/docker.sh
   DEPENDENCIES="with-tcl=${TCLSRC}:${TCLSRC}/unix"
   verbose "Building in Docker container (tcl at $TCLSRC) and installing into $DESTINATION"
   # Build using the Dockerfile from under the docker sub-directory
-  . "$(dirname "$0")/../share/dinosaurs/docker.sh"
+  . "$(dirname "$0")/../share/dinosaurs/lib/docker.sh"
 else
   verbose "Installing dependencies, requires admin privileges"
   "$(dirname "$0")/docker/dependencies.sh"

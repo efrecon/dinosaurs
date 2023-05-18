@@ -7,7 +7,8 @@
 
 # Root directory to construct the paths from. Defaults to the output directory
 # under the root of the whole project.
-ROOTDIR=${ROOTDIR:-"$(dirname "$(dirname "$0")")/output"}
+ROOTDIR=${ROOTDIR:-"$(dirname "$(dirname "$(readlink_f "$0")")")"}
+OUTDIR=${OUTDIR:-"${ROOTDIR%/}/output"}
 
 DINO_VERBOSE=${DINO_VERBOSE:-0}
 
@@ -193,10 +194,10 @@ while [ $# -gt 0 ]; do
       ;;
 
     --root)
-      ROOTDIR=$2; shift 2;
+      OUTDIR=$2; shift 2;
       ;;
     --root=*)
-      ROOTDIR="${1#*=}"; shift 1;
+      OUTDIR="${1#*=}"; shift 1;
       ;;
 
     -h | --help) # Show the help.

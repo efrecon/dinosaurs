@@ -2,7 +2,7 @@
 
 set -eu
 
-. "$(dirname "$0")/share/dinosaurs/utils.sh"
+. "$(dirname "$0")/share/dinosaurs/lib/utils.sh"
 
 # Chain of sub-tools to call
 DINO_CHAIN=${DINO_CHAIN:-"fetch build pack"}
