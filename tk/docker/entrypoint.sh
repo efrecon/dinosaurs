@@ -33,7 +33,6 @@ if printf '%s\n' "$STEPS" | grep -q configure; then
   case "$ARCHITECTURE" in
     linux-x86_64)
       CFLAGS="-m64" ./configure --enable-gcc --enable-shared="$SHARED" --prefix="$DESTINATION" "$@"
-      set +x
       ;;
     linux-i?86)
       CFLAGS="-m32" LDFLAGS="-m32" ./configure --enable-gcc --enable-shared="$SHARED" --prefix="$DESTINATION" "$@"
