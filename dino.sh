@@ -47,18 +47,18 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-DINO_PROJ=${1:-}; shift 1;
-if [ -z "${DINO_PROJ}" ]; then
+DINO_PROJECT=${1:-}; shift 1;
+if [ -z "${DINO_PROJECT}" ]; then
   printf "You must specify the name of a known project (subdirs)\n"; exit 1;
 fi
 
-if ! [ -d "$(dirname "$0")/$DINO_PROJ" ]; then
-  printf "Unknown project: %s\n" "$DINO_PROJ"; exit 1;
+if ! [ -d "$(dirname "$(readlink_f "$0")")/$DINO_PROJECT" ]; then
+  printf "Unknown project: %s\n" "$DINO_PROJECT"; exit 1;
 fi
 
 for DINO_SUBTOOL in $DINO_CHAIN; do
-  if [ -x "$(dirname "$0")/$DINO_PROJ/${DINO_SUBTOOL}.sh" ]; then
-    verbose "Running $DINO_PROJ/${DINO_SUBTOOL}.sh"
-    DINO_GRACEFULL=1 "$(dirname "$0")/$DINO_PROJ/${DINO_SUBTOOL}.sh" --verbose="$DINO_VERBOSE" "$@"
+  if [ -x "$(dirname "$(readlink_f "$0")")/$DINO_PROJECT/${DINO_SUBTOOL}.sh" ]; then
+    verbose "Running $DINO_PROJECT/${DINO_SUBTOOL}.sh"
+    DINO_GRACEFULL=1 "$(dirname "$(readlink_f "$0")")/$DINO_PROJECT/${DINO_SUBTOOL}.sh" --verbose="$DINO_VERBOSE" --project "$DINO_PROJECT" "$@"
   fi
 done
