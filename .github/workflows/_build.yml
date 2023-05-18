@@ -1,4 +1,4 @@
-name: Builder
+name: ".builder"
 
 on:
   workflow_call:

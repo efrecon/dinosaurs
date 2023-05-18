@@ -1,4 +1,4 @@
-name: Releaser
+name: ".releaser"
 
 on:
   workflow_call:
