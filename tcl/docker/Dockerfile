@@ -8,5 +8,5 @@ COPY tcl/docker/dependencies.sh /opt/dinosaurs/bin/
 RUN /opt/dinosaurs/bin/dependencies.sh
 
 # Install the entrypoint and run it
-COPY tk/docker/entrypoint.sh /opt/dinosaurs/bin/
+COPY tcl/docker/entrypoint.sh /opt/dinosaurs/bin/
 ENTRYPOINT ["/opt/dinosaurs/bin/entrypoint.sh"]
