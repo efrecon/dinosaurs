@@ -2,7 +2,7 @@
 
 set -eu
 
-. "$(dirname "$0")/../share/dinosaurs/lib/utils.sh"
+. "$(cd "$(dirname "$0")"; pwd -P)/../share/dinosaurs/lib/utils.sh"
 
 # Version of Tcl to fetch. Will be converted to a git tag.
 VERSION=${VERSION:-"8.0.5"}
@@ -26,9 +26,9 @@ STEPS=${STEPS:-"configure build install clean"}
 
 # shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/options.sh
 USAGE="builds Tk using Docker"
-. "$(dirname "$0")/../share/dinosaurs/lib/options.sh"
+. "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/options.sh"
 
-IMG_BASE=$(basename "$(dirname "$0")");
+IMG_BASE=$DINO_PROJECT
 
 # Set source and destination directories when empty, i.e. not set in options
 [ -z "$SOURCE" ] && SOURCE="${OUTDIR%/}/${IMG_BASE}${VERSION}"
@@ -40,7 +40,7 @@ if [ -d "$TCLSRC" ]; then
   verbose "Trying to use Tcl from $TCLSRC"
 else
   warning "$TCLSRC is not a directory, will fetch it first"
-  "$(dirname "$0")/../tcl/fetch.sh" \
+  "$(dirname "$(readlink_f "$0")")/../tcl/fetch.sh" \
     --version "$VERSION" \
     --destination "$TCLSRC" \
     --verbose="$DINO_VERBOSE"
@@ -50,7 +50,7 @@ if [ -x "${TCLSRC}/unix/tclsh" ]; then
   verbose "Found tclsh at ${TCLSRC}/unix/tclsh"
 else
   warning "${TCLSRC}/unix/tclsh is not executable, will build Tcl first"
-  "$(dirname "$0")/../tcl/build.sh" \
+  "$(dirname "$(readlink_f "$0")")/../tcl/build.sh" \
     --version "$VERSION" \
     --source "$TCLSRC" \
     --arch "$ARCHITECTURE" \
@@ -69,10 +69,10 @@ if [ "$DOCKER" = "1" ]; then
   DEPENDENCIES="with-tcl=${TCLSRC}:${TCLSRC}/unix"
   verbose "Building in Docker container (tcl at $TCLSRC) and installing into $DESTINATION"
   # Build using the Dockerfile from under the docker sub-directory
-  . "$(dirname "$0")/../share/dinosaurs/lib/docker.sh"
+  . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/docker.sh"
 else
   verbose "Installing dependencies, requires admin privileges"
-  "$(dirname "$0")/docker/dependencies.sh"
+  "$(dirname "$(readlink_f "$0")")/docker/dependencies.sh"
 
   verbose "Building and installing into $DESTINATION"
   mkdir -p "$DESTINATION"
@@ -82,7 +82,7 @@ else
   elif [ "${SHARED:-}" = "1" ]; then
     FLAGS=--shared
   fi
-  "$(dirname "$0")/docker/entrypoint.sh" \
+  "$(dirname "$(readlink_f "$0")")/docker/entrypoint.sh" \
     --source "$SOURCE" \
     --destination "$(readlink_f "$DESTINATION")" \
     --arch "$ARCHITECTURE" \
@@ -96,7 +96,7 @@ fi
 # If Tcl was built, clean it up
 if [ "$TCLCLEAN" ]; then
   verbose "Cleaning auto-built Tcl"
-  "$(dirname "$0")/../tcl/build.sh" \
+  "$(dirname "$(readlink_f "$0")")/../tcl/build.sh" \
     --version "$VERSION" \
     --source "$TCLSRC" \
     --arch "$ARCHITECTURE" \

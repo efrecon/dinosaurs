@@ -8,9 +8,10 @@
 [ -z "${SOURCE:-}" ] && printf "You must set SOURCE variable!" && exit 1
 [ -z "${ARCHITECTURE:-}" ] && printf "You must set ARCHITECTURE variable!" && exit 1
 [ -z "${VERSION:-}" ] && printf "You must set VERSION variable!" && exit 1
+[ -z "${DINO_PROJECT:-}" ] && printf "You must set DINO_PROJECT variable!" && exit 1
 
 # Basename for the name of the image to build when not default.
-IMG_BASE=${IMG_BASE:-"$(basename "$(dirname "$0")")"}
+IMG_BASE=${IMG_BASE:-"$DINO_PROJECT"}
 # Fully qualified name of the image to build, by default uses a combination of
 # the basename from above, the version and architecture.
 IMG_NAME=${IMG_NAME:-"${IMG_BASE}${VERSION}-${ARCHITECTURE}"}
@@ -23,20 +24,22 @@ mkdir -p "$DESTINATION"
 
 verbose "Building Docker image: $IMG_NAME"
 if [ -z "${UBUNTU_VERSION:-}" ]; then
-  docker image build -f "$(dirname "$0")/docker/Dockerfile" \
+  docker image build -f "$(readlink_f "$(dirname "$0")/docker/Dockerfile")" \
     --build-arg "VERSION=${VERSION}" \
     --build-arg "SOURCE=${SOURCE}" \
     --build-arg "DESTINATION=${DESTINATION}" \
+    --build-arg "DINO_PROJECT=${DINO_PROJECT}" \
     -t "$IMG_NAME" \
-    "$(dirname "$0")/.."
+    "$(dirname "$(readlink_f "$0")")/.."
 else
-  docker image build -f "$(dirname "$0")/docker/Dockerfile" \
+  docker image build -f "$(readlink_f "$(dirname "$0")/docker/Dockerfile")" \
     --build-arg "VERSION=${VERSION}" \
     --build-arg "SOURCE=${SOURCE}" \
     --build-arg "DESTINATION=${DESTINATION}" \
+    --build-arg "DINO_PROJECT=${DINO_PROJECT}" \
     --build-arg "UBUNTU_VERSION=${UBUNTU_VERSION}" \
     -t "$IMG_NAME" \
-    "$(dirname "$0")/.."
+    "$(dirname "$(readlink_f "$0")")/.."
 fi
 
 # Use the programs main argument vector to build arguments that will be passed

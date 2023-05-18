@@ -8,7 +8,7 @@
 
 [ -z "${TARURL:-}" ] && printf "You must set TARURL variable!" && exit 1
 
-TARURL_NAME=${TARURL_NAME:-"$(basename "$(dirname "$0")")"}
+TARURL_NAME=${TARURL_NAME:-"$DINO_PROJECT"}
 
 # Download the tarball to a temporary directory and extract it to another
 # temporary directory.

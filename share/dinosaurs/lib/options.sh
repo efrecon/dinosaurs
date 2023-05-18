@@ -10,6 +10,8 @@
 ROOTDIR=${ROOTDIR:-"$(dirname "$(dirname "$(readlink_f "$0")")")"}
 OUTDIR=${OUTDIR:-"${ROOTDIR%/}/output"}
 
+DINO_PROJECT=${DINO_PROJECT:-"$(basename "$(dirname "$(readlink_f "$0")")")"}
+
 DINO_VERBOSE=${DINO_VERBOSE:-0}
 
 unknown() {
@@ -56,6 +58,10 @@ usage() {
   if [ -n "${DOCKER+unset}" ]; then
     printf "  --host\\n"
     printf "\\tForce building on the host.\\n"
+  fi
+  if [ -n "${DINO_PROJECT+unset}" ]; then
+    printf "  -p, --proj, --project\\n"
+    printf "\\tProject to work with, defaults to name of directory hosting binary\\n"
   fi
   if [ -n "${ARCHITECTURE+unset}" ]; then
     printf "  -a, --arch, --architecture\\n"
@@ -190,6 +196,21 @@ while [ $# -gt 0 ]; do
         unknown "${1%=*}"; shift 1;
       else
         ARCHITECTURE="${1#*=}"; shift 1;
+      fi
+      ;;
+
+    -p | --proj | --project) # The name for the project to work with
+      if [ -z "${DINO_PROJECT+unset}" ]; then
+        unknown "$1"; shift 2;
+      else
+        DINO_PROJECT=$2; shift 2;
+      fi
+      ;;
+    --proj=* | --project=*)
+      if [ -z "${DINO_PROJECT+unset}" ]; then
+        unknown "${1%=*}"; shift 1;
+      else
+        DINO_PROJECT="${1#*=}"; shift 1;
       fi
       ;;
 
