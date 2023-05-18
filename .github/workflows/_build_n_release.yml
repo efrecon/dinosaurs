@@ -63,6 +63,7 @@ jobs:
       - name: Collect tarballs
         run: |
           find . -name "${{ inputs.project }}${{ inputs.version }}*.tar.gz" -exec mv \{\} . \;
+          ls -l *.tar.gz
       - name: Generate README
         id: readme
         run: |
