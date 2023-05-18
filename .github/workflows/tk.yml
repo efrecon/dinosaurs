@@ -26,29 +26,18 @@ jobs:
           - "8.1.1"
           - "8.2.3"
           - "8.3.5"
+          - "8.4.20"
         exclude:
           # Fails to build on i386 when linking statically
           - architecture: linux-i386
             version: "8.3.5"
     steps:
       - uses: actions/checkout@v3
-      - name: Download tcl
-        id: download-tcl
-        run: |
-          ./tcl/fetch.sh \
-            --version "${{ matrix.version }}"
       - name: Download tk
         id: download-tk
         run: |
           ./tk/fetch.sh \
             --version "${{ matrix.version }}"
-      - name: Build tcl
-        id: build-tcl
-        run: |
-          ./tcl/build.sh \
-            --version "${{ matrix.version }}" \
-            --architecture "${{ matrix.architecture }}" \
-            --static
       - name: Build tk
         id: build-tk
         run: |
@@ -84,6 +73,7 @@ jobs:
           - "8.1.1"
           - "8.2.3"
           - "8.3.5"
+          - "8.4.20"
     steps:
       - uses: actions/checkout@v3
       - name: Delete old release
