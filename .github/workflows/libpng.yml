@@ -1,0 +1,50 @@
+name: libpng
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - feature/*
+    paths:
+      - "zlib/**"
+      - "libpng/**"
+      - ".github/workflows/libpng.yml"
+      - ".github/workflows/_*.yml"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        architecture:
+          - linux-x86_64
+          - linux-i386
+        version:
+          - "1.0.69"
+          - "1.2.59"
+          - "1.4.22"
+          - "1.5.30"
+          - "1.6.39"
+    uses: ./.github/workflows/_build.yml
+    with:
+      project: libpng
+      version: ${{ matrix.version }}
+      architecture: ${{ matrix.architecture }}
+
+  release:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        # Same list as above, no support for YAML anchors in workflows at the
+        # moment.
+        version:
+          - "1.0.69"
+          - "1.2.59"
+          - "1.4.22"
+          - "1.5.30"
+          - "1.6.39"
+    uses: ./.github/workflows/_release.yml
+    with:
+      project: libpng
+      version: ${{ matrix.version }}

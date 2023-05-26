@@ -15,9 +15,6 @@ SOURCE=${SOURCE:-""}
 # Architecture to build for. Will default to the current one.
 ARCHITECTURE=${ARCHITECTURE:-"$(architecture)"}
 
-# Shared or static libraries?
-SHARED=${SHARED:-"1"}
-
 # Build using Docker when set to 1
 DOCKER=${DOCKER:-"1"}
 
@@ -44,17 +41,10 @@ else
 
   verbose "Building and installing into $DESTINATION"
   mkdir -p "$DESTINATION"
-  FLAGS=
-  if [ "${SHARED:-}" = "0" ]; then
-    FLAGS=--static
-  elif [ "${SHARED:-}" = "1" ]; then
-    FLAGS=--shared
-  fi
   "$(dirname "$(readlink_f "$0")")/docker/entrypoint.sh" \
     --source "$SOURCE" \
     --destination "$(readlink_f "$DESTINATION")" \
     --arch "$ARCHITECTURE" \
     --steps "${STEPS:-}" \
-    --verbose="$DINO_VERBOSE" \
-    $FLAGS
+    --verbose="$DINO_VERBOSE"
 fi

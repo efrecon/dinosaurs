@@ -79,6 +79,30 @@ done <<EOF
 $(printf %s\\n "${DEPENDENCIES:-}")
 EOF
 
+# Mount the content of the PREFIX variable into the docker container. Each
+# directory is meant as the top of "include" and "lib" directories.
+while IFS= read -r src; do
+  if printf %s\\n "$src" | grep -q ':'; then
+    tgt=$(printf %s\\n "$src" | cut -d: -f2)
+    src=$(printf %s\\n "$src" | cut -d: -f1)
+  else
+    tgt=/usr
+  fi
+  # Arrange for Docker mount under namespaced directory if value was path to
+  # file or directory.
+  if [ -d "$src" ]; then
+    src=$(readlink_f "${src}")
+    while IFS= read -r fpath; do
+      rpath=$(printf %s\\n "$fpath" | sed "s~^${src%/}~~")
+      set -- "$@" -v "${fpath}:${tgt%/}/${rpath#/}"
+    done <<EOF
+$(find "$src" -type f)
+EOF
+  fi
+done <<EOF
+$(printf %s\\n "${PREFIX:-}")
+EOF
+
 # SECOND STEP: image name and arguments to the entry point
 set -- "$@" \
   "$IMG_NAME" \
