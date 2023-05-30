@@ -65,7 +65,7 @@ usage() {
   fi
   if [ -n "${ARCHITECTURE+unset}" ]; then
     printf "  -a, --arch, --architecture\\n"
-    printf "\\tArchitecture to build for, a dash separated pair, e.g. linux-i386\\n"
+    printf "\\tArchitecture to build for, a dash separated config spec, e.g. i386-unkown-linux-glibc\\n"
   fi
   printf "  -r, --root\\n"
   printf "\\tRoot directory to construct the paths from, defaults to the output directory under the root of the whole project\\n"

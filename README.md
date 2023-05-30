@@ -32,7 +32,7 @@ working Docker environment and the ability for your user to create containers.
 
 The version can be passed as an argument to the scripts, so you could try
 another version (untested, unlikely to work at this point). You can also build
-for other architectures, for example, try specifying `--arch=linux-i386` as an
+for other architectures, for example, try specifying `--arch=i386-unknown-linux-glibc` as an
 option to the build script.
 
   [tcl-release]: https://github.com/efrecon/dinosaurs/releases/tag/tcl

@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         architecture:
-          - linux-x86_64
-          - linux-i386
+          - x86_64-unknown-linux-glibc
+          - i386-unknown-linux-glibc
         version:
           - "1.0.69"
           - "1.2.59"

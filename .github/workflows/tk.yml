@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         architecture:
-          - linux-x86_64
-          - linux-i386
+          - x86_64-unknown-linux-glibc
+          - i386-unknown-linux-glibc
         # These are the latest of the major versions according to
         # https://www.tcl.tk/software/tcltk/choose.html
         version:
@@ -29,7 +29,7 @@ jobs:
           - "8.4.20"
         exclude:
           # Fails to build on i386 when linking statically
-          - architecture: linux-i386
+          - architecture: i386-unknown-linux-glibc
             version: "8.3.5"
     uses: ./.github/workflows/_build.yml
     with:

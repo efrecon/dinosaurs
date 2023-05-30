@@ -31,10 +31,10 @@ if printf '%s\n' "$STEPS" | grep -q configure; then
   verbose "Configuring Tk"
   autoconf
   case "$ARCHITECTURE" in
-    linux-x86_64)
+    x86_64-*-linux*)
       CFLAGS="-m64" ./configure --enable-gcc --enable-shared="$SHARED" --prefix="$DESTINATION" "$@"
       ;;
-    linux-i?86)
+    i?86-*-linux*)
       CFLAGS="-m32" LDFLAGS="-m32" ./configure --enable-gcc --enable-shared="$SHARED" --prefix="$DESTINATION" "$@"
       ;;
     *)

@@ -32,7 +32,15 @@ download() {
 
 tolower() { tr '[:upper:]' '[:lower:]'; }
 
-architecture() { printf %s-%s\\n "$(uname -s | tolower)" "$(uname -m | tolower)"; }
+_libc() {
+  if ldd "$(command -v "$(cut -d '' -f1 /proc/self/cmdline)")" | grep -q musl; then
+    printf "musl\n"
+  else
+    printf "glibc\n"
+  fi
+}
+
+architecture() { printf %s-unknown-%s-%s\\n "$(uname -m | tolower)" "$(uname -s | tolower)" "$(_libc)"; }
 
 if_sudo() {
   if [ "$(id -u)" -ne "0" ]; then

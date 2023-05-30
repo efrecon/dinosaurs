@@ -30,10 +30,10 @@ cd "${SOURCE}"
 if printf '%s\n' "$STEPS" | grep -q configure; then
   verbose "Configuring zlib"
   case "$ARCHITECTURE" in
-    linux-x86_64)
+    x86_64-*-linux*)
       CFLAGS="-m64 -fPIC" prefix="$DESTINATION" ./configure "$@"
       ;;
-    linux-i?86)
+    i?86-*-linux*)
       CFLAGS="-m32 -fPIC" prefix="$DESTINATION" ./configure "$@"
       ;;
     *)
