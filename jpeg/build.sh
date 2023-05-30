@@ -37,22 +37,5 @@ if [ "$DOCKER" = "1" ]; then
   # Build using the Dockerfile from under the docker sub-directory
   . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/docker.sh"
 else
-  verbose "Installing dependencies, requires admin privileges"
-  "$(dirname "$(readlink_f "$0")")/docker/dependencies.sh"
-
-  verbose "Building and installing into $DESTINATION"
-  mkdir -p "$DESTINATION"
-  FLAGS=
-  if [ "${SHARED:-}" = "0" ]; then
-    FLAGS=--static
-  elif [ "${SHARED:-}" = "1" ]; then
-    FLAGS=--shared
-  fi
-  "$(dirname "$(readlink_f "$0")")/docker/entrypoint.sh" \
-    --source "$SOURCE" \
-    --destination "$(readlink_f "$DESTINATION")" \
-    --arch "$ARCHITECTURE" \
-    --steps "${STEPS:-}" \
-    --verbose="$DINO_VERBOSE" \
-    $FLAGS
+  . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/host.sh"
 fi
