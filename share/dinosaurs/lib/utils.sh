@@ -33,7 +33,9 @@ download() {
 tolower() { tr '[:upper:]' '[:lower:]'; }
 
 _libc() {
-  if ldd "$(command -v "$(cut -d '' -f1 /proc/self/cmdline)")" | grep -q musl; then
+  # Find out what this process is linked to. Extract using the command line
+  # under /proc. See: https://stackoverflow.com/a/70990245
+  if ldd "$(command -v "$(awk 'BEGIN{FS="\x00"}{print$1}' < /proc/self/cmdline)")" | grep -q musl; then
     printf "musl\n"
   else
     printf "glibc\n"

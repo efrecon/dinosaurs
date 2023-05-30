@@ -61,40 +61,21 @@ else
   TCLCLEAN=1
 fi
 
+# shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/docker.sh
+DEPENDENCIES="with-tcl=${TCLSRC}:${TCLSRC}/unix"
 if [ "$DOCKER" = "1" ]; then
   if [ "$(version "$VERSION")" -ge "$(version "8.4")" ]; then
     UBUNTU_VERSION=12.04
   fi
-  # shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/docker.sh
-  DEPENDENCIES="with-tcl=${TCLSRC}:${TCLSRC}/unix"
   verbose "Building in Docker container (tcl at $TCLSRC) and installing into $DESTINATION"
   # Build using the Dockerfile from under the docker sub-directory
   . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/docker.sh"
 else
-  verbose "Installing dependencies, requires admin privileges"
-  "$(dirname "$(readlink_f "$0")")/docker/dependencies.sh"
-
-  verbose "Building and installing into $DESTINATION"
-  mkdir -p "$DESTINATION"
-  FLAGS=
-  if [ "${SHARED:-}" = "0" ]; then
-    FLAGS=--static
-  elif [ "${SHARED:-}" = "1" ]; then
-    FLAGS=--shared
-  fi
-  "$(dirname "$(readlink_f "$0")")/docker/entrypoint.sh" \
-    --source "$SOURCE" \
-    --destination "$(readlink_f "$DESTINATION")" \
-    --arch "$ARCHITECTURE" \
-    --steps "${STEPS:-}" \
-    --verbose="$DINO_VERBOSE" \
-    $FLAGS \
-    -- \
-      --with-tcl="${TCLSRC}:${TCLSRC}/unix"
+  . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/host.sh"
 fi
 
 # If Tcl was built, clean it up
-if [ "$TCLCLEAN" ]; then
+if [ "$TCLCLEAN" = "1" ]; then
   verbose "Cleaning auto-built Tcl"
   "$(dirname "$(readlink_f "$0")")/../tcl/build.sh" \
     --version "$VERSION" \
