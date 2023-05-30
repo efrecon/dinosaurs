@@ -85,31 +85,18 @@ else
     --verbose="$DINO_VERBOSE"
   ZLIBCLEAN=1
 fi
+
+PREFIX=${OUTDIR%/}/${ARCHITECTURE}/zlib${ZLIB_VERSION}
 if [ "$DOCKER" = "1" ]; then
-  PREFIX=${OUTDIR%/}/${ARCHITECTURE}/zlib${ZLIB_VERSION}
   verbose "Building in Docker container (zlib at $ZLIBSRC) and installing into $DESTINATION"
   # Build using the Dockerfile from under the docker sub-directory
   . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/docker.sh"
 else
-  # TODO: Fix this!
-  verbose "Installing dependencies, requires admin privileges"
-  "$(dirname "$(readlink_f "$0")")/docker/dependencies.sh"
-
-  verbose "Building and installing into $DESTINATION"
-  mkdir -p "$DESTINATION"
-  "$(dirname "$(readlink_f "$0")")/docker/entrypoint.sh" \
-    --source "$SOURCE" \
-    --destination "$(readlink_f "$DESTINATION")" \
-    --arch "$ARCHITECTURE" \
-    --steps "${STEPS:-}" \
-    --verbose="$DINO_VERBOSE" \
-    -- \
-      CFLAGS="-I${OUTDIR%/}/${ARCHITECTURE}/zlib${ZLIB_VERSION}/include" \
-      LDFLAGS="-L${OUTDIR%/}/${ARCHITECTURE}/zlib${ZLIB_VERSION}/lib"
+  . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/host.sh"
 fi
 
 # If zlib was built, clean it up
-if [ "$ZLIBCLEAN" ]; then
+if [ "$ZLIBCLEAN" = "1" ]; then
   verbose "Cleaning auto-built zlib"
   "$(dirname "$(readlink_f "$0")")/../zlib/build.sh" \
     --version "$ZLIB_VERSION" \

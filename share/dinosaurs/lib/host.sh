@@ -75,7 +75,7 @@ while IFS= read -r src; do
     src=$(readlink_f "${src}")
     while IFS= read -r fpath; do
       rpath=$(printf %s\\n "$fpath" | sed "s~^${src%/}~~")
-      ln -s "${fpath}" "${tgt%/}/${rpath#/}"
+      ln -s "${tgt%/}/${rpath#/}" "${fpath}"
     done <<EOF
 $(find "$src" -type f)
 EOF
@@ -96,7 +96,8 @@ while IFS= read -r src; do
   if [ -d "$src" ]; then
     src=$(readlink_f "${src}")
     while IFS= read -r fpath; do
-      rm -f "${fpath}"
+      rpath=$(printf %s\\n "$fpath" | sed "s~^${src%/}~~")
+      rm -f "${tgt%/}/${rpath#/}"
     done <<EOF
 $(find "$src" -type f)
 EOF
