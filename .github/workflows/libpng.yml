@@ -31,7 +31,6 @@ jobs:
       project: libpng
       version: ${{ matrix.version }}
       architecture: ${{ matrix.architecture }}
-      build-args: --host
 
   release:
     needs: build
