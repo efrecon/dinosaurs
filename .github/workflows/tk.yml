@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - feature/*
+      - fix/*
     paths:
       - "tcl/**"
       - "tk/**"
@@ -31,7 +32,7 @@ jobs:
       project: tk
       version: ${{ matrix.version }}
       architecture: ${{ matrix.architecture }}
-      build-args: --static --host
+      build-args: --static
 
   release:
     needs: build
