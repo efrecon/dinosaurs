@@ -28,6 +28,7 @@ jobs:
       project: zlib
       version: ${{ matrix.version }}
       architecture: ${{ matrix.architecture }}
+      build-args: --host
 
   release:
     needs: build

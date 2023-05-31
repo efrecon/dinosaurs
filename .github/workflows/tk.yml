@@ -36,7 +36,7 @@ jobs:
       project: tk
       version: ${{ matrix.version }}
       architecture: ${{ matrix.architecture }}
-      build-args: --static
+      build-args: --static --host
 
   release:
     needs: build
