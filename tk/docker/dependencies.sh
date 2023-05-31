@@ -11,6 +11,7 @@ export DEBIAN_FRONTEND
 
 repoint_sources_list
 #if_sudo dpkg --add-architecture i386
+if_sudo rm -f /etc/apt/sources.list.d/microsoft-prod.list
 if_sudo apt-get update
 if_sudo apt-get install -y \
     build-essential autoconf gcc-multilib libc6-dev-i386 libtool libx11-dev
