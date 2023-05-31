@@ -12,5 +12,5 @@ export DEBIAN_FRONTEND
 repoint_sources_list
 if_sudo apt-get update
 if_sudo apt-get install -y \
-    build-essential autoconf gcc-multilib libc6-dev-i386 libtool libX11-dev
-if_sudo apt-get install -y libX11-dev:i386 || true
+    build-essential autoconf gcc-multilib libc6-dev-i386 libtool libx11-dev
+if_sudo apt-get install -y libx11-dev:i386 || true
