@@ -75,7 +75,8 @@ while IFS= read -r src; do
     src=$(readlink_f "${src}")
     while IFS= read -r fpath; do
       rpath=$(printf %s\\n "$fpath" | sed "s~^${src%/}~~")
-      ln -s "${tgt%/}/${rpath#/}" "${fpath}"
+      mkdir -p "$(dirname "${tgt%/}/${rpath#/}")"
+      ln -sf "${fpath}" "${tgt%/}/${rpath#/}"
     done <<EOF
 $(find "$src" -type f)
 EOF
