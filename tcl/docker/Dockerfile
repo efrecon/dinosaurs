@@ -1,4 +1,4 @@
-ARG UBUNTU_VERSION=10.04
+ARG UBUNTU_VERSION=12.04
 FROM ubuntu:${UBUNTU_VERSION}
 
 # Install libraries and dependency script

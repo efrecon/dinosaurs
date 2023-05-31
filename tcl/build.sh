@@ -35,9 +35,6 @@ IMG_BASE=$DINO_PROJECT
 [ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
 if [ "$DOCKER" = "1" ]; then
-  if [ "$(version "$VERSION")" -ge "$(version "8.4")" ]; then
-    UBUNTU_VERSION=12.04
-  fi
   verbose "Building in Docker container and installing into $DESTINATION"
   # Build using the Dockerfile from under the docker sub-directory
   . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/docker.sh"

@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - feature/*
+      - fix/*
     paths:
       - "tcl/**"
       - ".github/workflows/tcl.yml"
@@ -35,7 +36,7 @@ jobs:
       project: tcl
       version: ${{ matrix.version }}
       architecture: ${{ matrix.architecture }}
-      build-args: --static --host
+      build-args: --static
 
   release:
     needs: build

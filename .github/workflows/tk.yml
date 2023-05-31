@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - feature/*
+      - fix/*
     paths:
       - "tcl/**"
       - "tk/**"
@@ -25,18 +26,13 @@ jobs:
           - "8.0.5"
           - "8.1.1"
           - "8.2.3"
-          - "8.3.5"
           - "8.4.20"
-        exclude:
-          # Fails to build on i386 when linking statically
-          - architecture: i386-unknown-linux-glibc
-            version: "8.3.5"
     uses: ./.github/workflows/_build.yml
     with:
       project: tk
       version: ${{ matrix.version }}
       architecture: ${{ matrix.architecture }}
-      build-args: --static --host
+      build-args: --static
 
   release:
     needs: build
@@ -49,7 +45,6 @@ jobs:
           - "8.0.5"
           - "8.1.1"
           - "8.2.3"
-          - "8.3.5"
           - "8.4.20"
     uses: ./.github/workflows/_release.yml
     with:
