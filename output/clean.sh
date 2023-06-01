@@ -8,11 +8,11 @@ USAGE="Clean binaries and downloads for project(s)"
 
 clean() {
   verbose "Cleaning $proj"
-  find "$OUTDIR" -maxdepth 2 -depth -name "${1}*" -type d -exec rm -rf {} \;
+  find "$DINO_OUTDIR" -maxdepth 2 -depth -name "${1}*" -type d -exec rm -rf {} \;
 }
 
 if [ "$#" -eq 0 ]; then
-  find "$ROOTDIR" -maxdepth 1 -type d -exec basename {} \; |
+  find "$DINO_ROOTDIR" -maxdepth 1 -type d -exec basename {} \; |
     grep -v -e '^\.' -e '^output$' -e '^share$' |
     while read -r proj; do
       clean "$proj"

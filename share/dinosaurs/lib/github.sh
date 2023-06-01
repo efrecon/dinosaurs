@@ -3,7 +3,7 @@
 # This file is meant to be sourced, not executed. Its behaviour will depend on
 # the presence of some variables.
 
-[ -z "${DESTINATION:-}" ] && printf "You must set DESTINATION variable!" && exit 1
+[ -z "${DINO_DEST:-}" ] && printf "You must set DINO_DEST variable!" && exit 1
 
 # GITHUB_TAG is the tag to fetch from GitHub. It will be converted to a git tag
 # and the repo will be downloaded at that tag. You have to set this variable
@@ -30,9 +30,9 @@ mkdir -p "$tardir"
 tar -xzf "$dwdir/${GITHUB_NAME}.tar.gz" -C "$tardir"
 
 # Create the destination directory and copy the contents of the tarball to it.
-mkdir -p "$DESTINATION"
-verbose "Extracting GitHub snapshot to $DESTINATION"
-tar -C "${tardir}/${GITHUB_NAME}-${GITHUB_TAG}" -cf - . | tar -C "$DESTINATION" -xf -
+mkdir -p "$DINO_DEST"
+verbose "Extracting GitHub snapshot to $DINO_DEST"
+tar -C "${tardir}/${GITHUB_NAME}-${GITHUB_TAG}" -cf - . | tar -C "$DINO_DEST" -xf -
 
 # Cleanup.
 rm -rf "$dwdir" "$tardir"

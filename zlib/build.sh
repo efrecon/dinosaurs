@@ -5,21 +5,21 @@ set -eu
 . "$(cd "$(dirname "$0")"; pwd -P)/../share/dinosaurs/lib/utils.sh"
 
 # Version of Tcl to fetch. Will be converted to a git tag.
-VERSION=${VERSION:-"1.0.9"}
+DINO_VERSION=${DINO_VERSION:-"1.0.9"}
 
 # Souce and destination directories. Will default to a subdirectory of the
 # current, carrying the version number when empty.
-DESTINATION=${DESTINATION:-""}
-SOURCE=${SOURCE:-""}
+DINO_DEST=${DINO_DEST:-""}
+DINO_SOURCE=${DINO_SOURCE:-""}
 
 # Architecture to build for. Will default to the current one.
-ARCHITECTURE=${ARCHITECTURE:-"$(architecture)"}
+DINO_ARCH=${DINO_ARCH:-"$(architecture)"}
 
 # Build using Docker when set to 1
-DOCKER=${DOCKER:-"1"}
+DINO_DOCKER=${DINO_DOCKER:-"1"}
 
 # Compilation steps to run.
-STEPS=${STEPS:-"configure build install clean"}
+DINO_STEPS=${DINO_STEPS:-"configure build install clean"}
 
 # shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/options.sh
 USAGE="builds zlib using Docker"
@@ -28,14 +28,14 @@ USAGE="builds zlib using Docker"
 IMG_BASE=$DINO_PROJECT
 
 # Set source and destination directories when empty, i.e. not set in options
-[ -z "$SOURCE" ] && SOURCE="${OUTDIR%/}/${IMG_BASE}${VERSION}"
-[ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
+[ -z "$DINO_SOURCE" ] && DINO_SOURCE="${DINO_OUTDIR%/}/${IMG_BASE}${DINO_VERSION}"
+[ -z "$DINO_DEST" ] && DINO_DEST="${DINO_OUTDIR%/}/${DINO_ARCH}/${IMG_BASE}${DINO_VERSION}"
 
 # Check that the source directory exists
-[ ! -d "$SOURCE" ] && error "Source directory $SOURCE does not exist"
+[ ! -d "$DINO_SOURCE" ] && error "Source directory $DINO_SOURCE does not exist"
 
-if [ "$DOCKER" = "1" ]; then
-  verbose "Building in Docker container and installing into $DESTINATION"
+if [ "$DINO_DOCKER" = "1" ]; then
+  verbose "Building in Docker container and installing into $DINO_DEST"
   # Build using the Dockerfile from under the docker sub-directory
   . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/docker.sh"
 else
