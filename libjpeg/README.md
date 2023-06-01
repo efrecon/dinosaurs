@@ -7,4 +7,4 @@ your user is able to build and run containers. GitHub workflow [automation]
 arranges to build the latest minor versions of all versions.
 
   [tarballs]: http://ijg.org/files/
-  [automation]: ../.github/workflows/jpeg.yml
+  [automation]: ../.github/workflows/libjpeg.yml

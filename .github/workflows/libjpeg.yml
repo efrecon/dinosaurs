@@ -1,4 +1,4 @@
-name: jpeg
+name: libjpeg
 
 on:
   workflow_dispatch:
@@ -8,8 +8,8 @@ on:
       - feature/*
       - fix/*
     paths:
-      - "jpeg/**"
-      - ".github/workflows/jpeg.yml"
+      - "libjpeg/**"
+      - ".github/workflows/libjpeg.yml"
       - ".github/workflows/_*.yml"
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
           - "9e"
     uses: ./.github/workflows/_build.yml
     with:
-      project: jpeg
+      project: libjpeg
       version: ${{ matrix.version }}
       architecture: ${{ matrix.architecture }}
       build-args: --host
@@ -45,5 +45,5 @@ jobs:
           - "9e"
     uses: ./.github/workflows/_release.yml
     with:
-      project: jpeg
+      project: libjpeg
       version: ${{ matrix.version }}
