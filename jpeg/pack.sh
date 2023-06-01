@@ -25,7 +25,7 @@ USAGE="Package libJPEG binaries into a directory"
 [ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/${ARCHITECTURE}"
 
 # Check that the source directory exists
-[ ! -d "$SOURCE" ] && error "Source directory $SOURCE does not exists"
+[ ! -d "$SOURCE" ] && error "Source directory $SOURCE does not exist"
 
 # Package into a tarball
 . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/tar.sh"

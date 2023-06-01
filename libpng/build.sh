@@ -32,7 +32,7 @@ IMG_BASE=$DINO_PROJECT
 [ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
 # Check that the source directory exists
-[ ! -d "$SOURCE" ] && error "Source directory $SOURCE does not exists"
+[ ! -d "$SOURCE" ] && error "Source directory $SOURCE does not exist"
 
 ZLIB_VERSION=${ZLIB_VERSION:-""}
 # When no zlib version is speicified, try to guess it from the release that was

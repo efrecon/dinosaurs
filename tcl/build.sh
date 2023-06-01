@@ -35,7 +35,7 @@ IMG_BASE=$DINO_PROJECT
 [ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
 # Check that the source directory exists
-[ ! -d "$SOURCE" ] && error "Source directory $SOURCE does not exists"
+[ ! -d "$SOURCE" ] && error "Source directory $SOURCE does not exist"
 
 if [ "$DOCKER" = "1" ]; then
   verbose "Building in Docker container and installing into $DESTINATION"
