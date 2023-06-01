@@ -34,6 +34,9 @@ IMG_BASE=$DINO_PROJECT
 [ -z "$SOURCE" ] && SOURCE="${OUTDIR%/}/${IMG_BASE}${VERSION}"
 [ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
+# Check that the source directory exists
+[ ! -d "$SOURCE" ] && error "Source directory $SOURCE does not exists"
+
 # Look for Tcl, build it if not found
 TCLSRC=${TCLSRC:-"$(dirname "$SOURCE")/tcl${VERSION}"}
 if [ -d "$TCLSRC" ]; then

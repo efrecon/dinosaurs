@@ -31,6 +31,9 @@ IMG_BASE=$DINO_PROJECT
 [ -z "$SOURCE" ] && SOURCE="${OUTDIR%/}/${IMG_BASE}${VERSION}"
 [ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
 
+# Check that the source directory exists
+[ ! -d "$SOURCE" ] && error "Source directory $SOURCE does not exists"
+
 if [ "$DOCKER" = "1" ]; then
   verbose "Building in Docker container and installing into $DESTINATION"
   # Build using the Dockerfile from under the docker sub-directory
