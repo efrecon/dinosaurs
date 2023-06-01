@@ -5,21 +5,21 @@ set -eu
 . "$(cd "$(dirname "$0")"; pwd -P)/../share/dinosaurs/lib/utils.sh"
 
 # Version of libpng to build.
-VERSION=${VERSION:-"1.0.69"}
+DINO_VERSION=${DINO_VERSION:-"1.0.69"}
 
 # Souce and destination directories. Will default to a subdirectory of the
 # current, carrying the version number when empty.
-DESTINATION=${DESTINATION:-""}
-SOURCE=${SOURCE:-""}
+DINO_DEST=${DINO_DEST:-""}
+DINO_SOURCE=${DINO_SOURCE:-""}
 
 # Architecture to build for. Will default to the current one.
-ARCHITECTURE=${ARCHITECTURE:-"$(architecture)"}
+DINO_ARCH=${DINO_ARCH:-"$(architecture)"}
 
 # Build using Docker when set to 1
-DOCKER=${DOCKER:-"1"}
+DINO_DOCKER=${DINO_DOCKER:-"1"}
 
 # Compilation steps to run.
-STEPS=${STEPS:-"configure build install clean"}
+DINO_STEPS=${DINO_STEPS:-"configure build install clean"}
 
 # shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/options.sh
 USAGE="builds libpng using Docker"
@@ -28,11 +28,11 @@ USAGE="builds libpng using Docker"
 IMG_BASE=$DINO_PROJECT
 
 # Set source and destination directories when empty, i.e. not set in options
-[ -z "$SOURCE" ] && SOURCE="${OUTDIR%/}/${IMG_BASE}${VERSION}"
-[ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/${ARCHITECTURE}/${IMG_BASE}${VERSION}"
+[ -z "$DINO_SOURCE" ] && DINO_SOURCE="${DINO_OUTDIR%/}/${IMG_BASE}${DINO_VERSION}"
+[ -z "$DINO_DEST" ] && DINO_DEST="${DINO_OUTDIR%/}/${DINO_ARCH}/${IMG_BASE}${DINO_VERSION}"
 
 # Check that the source directory exists
-[ ! -d "$SOURCE" ] && error "Source directory $SOURCE does not exist"
+[ ! -d "$DINO_SOURCE" ] && error "Source directory $DINO_SOURCE does not exist"
 
 ZLIB_VERSION=${ZLIB_VERSION:-""}
 # When no zlib version is speicified, try to guess it from the release that was
@@ -48,7 +48,7 @@ if [ -z "$ZLIB_VERSION" ]; then
                     # keep the ones before.
                     dt=$(printf %s\\n "$line" | grep -Eo '[0-9]{4}-[0-9]{2}-[0-9]{2}')
                     tstamp=$(date -d "$dt" +%s)
-                    if [ "$tstamp" -lt "$(stat -c %Y "$SOURCE")" ]; then
+                    if [ "$tstamp" -lt "$(stat -c %Y "$DINO_SOURCE")" ]; then
                       printf %s\\n "$line"
                     fi
                   done |
@@ -64,7 +64,7 @@ fi
 
 
 # Look for zlib, build it if not found
-ZLIBSRC=${ZLIBSRC:-"$(dirname "$SOURCE")/zlib${ZLIB_VERSION}"}
+ZLIBSRC=${ZLIBSRC:-"$(dirname "$DINO_SOURCE")/zlib${ZLIB_VERSION}"}
 if [ -d "$ZLIBSRC" ]; then
   verbose "Trying to use zlib from $ZLIBSRC"
 else
@@ -82,16 +82,16 @@ else
   "$(dirname "$(readlink_f "$0")")/../zlib/build.sh" \
     --version "$ZLIB_VERSION" \
     --source "$ZLIBSRC" \
-    --arch "$ARCHITECTURE" \
-    --docker="$DOCKER" \
+    --arch "$DINO_ARCH" \
+    --docker="$DINO_DOCKER" \
     --steps "configure build install" \
     --verbose="$DINO_VERBOSE"
   ZLIBCLEAN=1
 fi
 
-PREFIX=${OUTDIR%/}/${ARCHITECTURE}/zlib${ZLIB_VERSION}
-if [ "$DOCKER" = "1" ]; then
-  verbose "Building in Docker container (zlib at $ZLIBSRC) and installing into $DESTINATION"
+PREFIX=${DINO_OUTDIR%/}/${DINO_ARCH}/zlib${ZLIB_VERSION}
+if [ "$DINO_DOCKER" = "1" ]; then
+  verbose "Building in Docker container (zlib at $ZLIBSRC) and installing into $DINO_DEST"
   # Build using the Dockerfile from under the docker sub-directory
   . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/docker.sh"
 else
@@ -104,7 +104,7 @@ if [ "$ZLIBCLEAN" = "1" ]; then
   "$(dirname "$(readlink_f "$0")")/../zlib/build.sh" \
     --version "$ZLIB_VERSION" \
     --source "$ZLIBSRC" \
-    --arch "$ARCHITECTURE" \
-    --docker="$DOCKER" \
+    --arch "$DINO_ARCH" \
+    --docker="$DINO_DOCKER" \
     --steps "clean"
 fi

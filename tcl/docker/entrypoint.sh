@@ -7,17 +7,17 @@ set -eu
 
 # Destination directory. Will default to a subdirectory of the current, carrying
 # the version number when empty.
-DESTINATION=${DESTINATION:-"/usr/local"}
-SOURCE=${SOURCE:-"/usr/local/src"}
+DINO_DEST=${DINO_DEST:-"/usr/local"}
+DINO_SOURCE=${DINO_SOURCE:-"/usr/local/src"}
 
 # Architecture to build for. Will default to the current one.
-ARCHITECTURE=${ARCHITECTURE:-"$(architecture)"}
+DINO_ARCH=${DINO_ARCH:-"$(architecture)"}
 
 # Shared or static libraries?
-SHARED=${SHARED:-"1"}
+DINO_SHARED=${DINO_SHARED:-"1"}
 
 # Compilation steps to run.
-STEPS=${STEPS:-"configure build install clean"}
+DINO_STEPS=${DINO_STEPS:-"configure build install clean"}
 
 # shellcheck disable=SC2034 # Variable used in lib/options.sh
 USAGE="builds Tcl on UNIX"
@@ -25,29 +25,29 @@ USAGE="builds Tcl on UNIX"
 # shellcheck source=../../share/dinosaurs/lib/options.sh
 . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/options.sh"
 
-cd "${SOURCE}/unix"
+cd "${DINO_SOURCE}/unix"
 
-if printf '%s\n' "$STEPS" | grep -q configure; then
+if printf '%s\n' "$DINO_STEPS" | grep -q configure; then
   verbose "Configuring Tcl"
   autoconf
-  case "$ARCHITECTURE" in
+  case "$DINO_ARCH" in
     x86_64-*-linux*)
-      CFLAGS="-m64" ./configure --enable-gcc --enable-shared="$SHARED" --prefix="$DESTINATION" "$@"
+      CFLAGS="-m64" ./configure --enable-gcc --enable-shared="$DINO_SHARED" --prefix="$DINO_DEST" "$@"
       ;;
     i?86-*-linux*)
-      CFLAGS="-m32" LDFLAGS="-m32" ./configure --enable-gcc --enable-shared="$SHARED" --prefix="$DESTINATION" "$@"
+      CFLAGS="-m32" LDFLAGS="-m32" ./configure --enable-gcc --enable-shared="$DINO_SHARED" --prefix="$DINO_DEST" "$@"
       ;;
     *)
-      echo "Unsupported architecture: $ARCHITECTURE" >&2
+      echo "Unsupported architecture: $DINO_ARCH" >&2
       exit 1
       ;;
   esac
 fi
-if printf '%s\n' "$STEPS" | grep -q build; then
+if printf '%s\n' "$DINO_STEPS" | grep -q build; then
   verbose "Building Tcl"
   make
 fi
-if printf '%s\n' "$STEPS" | grep -q install; then
+if printf '%s\n' "$DINO_STEPS" | grep -q install; then
   verbose "Installing Tcl"
   if [ -f "install-sh" ]; then
     if ! [ -x "install-sh" ]; then
@@ -58,7 +58,7 @@ if printf '%s\n' "$STEPS" | grep -q install; then
   # avoid manuals because they require hard links
   make install-binaries install-libraries
 fi
-if printf '%s\n' "$STEPS" | grep -q clean; then
+if printf '%s\n' "$DINO_STEPS" | grep -q clean; then
   verbose "Cleaning Tcl"
   make distclean
 fi

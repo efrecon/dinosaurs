@@ -4,38 +4,38 @@
 # the presence of some variables. NOTE: It DESTROYS the program's argument
 # vector to be able to operate.
 
-[ -z "${DESTINATION:-}" ] && printf "You must set DESTINATION variable!" && exit 1
-[ -z "${SOURCE:-}" ] && printf "You must set SOURCE variable!" && exit 1
-[ -z "${ARCHITECTURE:-}" ] && printf "You must set ARCHITECTURE variable!" && exit 1
-[ -z "${VERSION:-}" ] && printf "You must set VERSION variable!" && exit 1
+[ -z "${DINO_DEST:-}" ] && printf "You must set DINO_DEST variable!" && exit 1
+[ -z "${DINO_SOURCE:-}" ] && printf "You must set DINO_SOURCE variable!" && exit 1
+[ -z "${DINO_ARCH:-}" ] && printf "You must set DINO_ARCH variable!" && exit 1
+[ -z "${DINO_VERSION:-}" ] && printf "You must set DINO_VERSION variable!" && exit 1
 [ -z "${DINO_PROJECT:-}" ] && printf "You must set DINO_PROJECT variable!" && exit 1
 
 # Basename for the name of the image to build when not default.
 IMG_BASE=${IMG_BASE:-"$DINO_PROJECT"}
 # Fully qualified name of the image to build, by default uses a combination of
 # the basename from above, the version and architecture.
-IMG_NAME=${IMG_NAME:-"${IMG_BASE}${VERSION}-${ARCHITECTURE}"}
+IMG_NAME=${IMG_NAME:-"${IMG_BASE}${DINO_VERSION}-${DINO_ARCH}"}
 # Protected "namespace" inside container under which we will mount local
 # fully resolved directories.
 IMG_NAMESPACE=${IMG_NAMESPACE:-"/opt/dinosaurs/mnt"}
 
 
-mkdir -p "$DESTINATION"
+mkdir -p "$DINO_DEST"
 
 verbose "Building Docker image: $IMG_NAME"
 if [ -z "${UBUNTU_VERSION:-}" ]; then
   docker image build -f "$(readlink_f "$(dirname "$0")/docker/Dockerfile")" \
-    --build-arg "VERSION=${VERSION}" \
-    --build-arg "SOURCE=${SOURCE}" \
-    --build-arg "DESTINATION=${DESTINATION}" \
+    --build-arg "DINO_VERSION=${DINO_VERSION}" \
+    --build-arg "DINO_SOURCE=${DINO_SOURCE}" \
+    --build-arg "DINO_DEST=${DINO_DEST}" \
     --build-arg "DINO_PROJECT=${DINO_PROJECT}" \
     -t "$IMG_NAME" \
     "$(dirname "$(readlink_f "$0")")/.."
 else
   docker image build -f "$(readlink_f "$(dirname "$0")/docker/Dockerfile")" \
-    --build-arg "VERSION=${VERSION}" \
-    --build-arg "SOURCE=${SOURCE}" \
-    --build-arg "DESTINATION=${DESTINATION}" \
+    --build-arg "DINO_VERSION=${DINO_VERSION}" \
+    --build-arg "DINO_SOURCE=${DINO_SOURCE}" \
+    --build-arg "DINO_DEST=${DINO_DEST}" \
     --build-arg "DINO_PROJECT=${DINO_PROJECT}" \
     --build-arg "UBUNTU_VERSION=${UBUNTU_VERSION}" \
     -t "$IMG_NAME" \
@@ -46,12 +46,12 @@ fi
 # to docker run.
 
 # FIRST STEP: start with the arguments to docker run itself
-abssrc=$(readlink_f "${SOURCE}"); # Resolve the source so we can remap it
+abssrc=$(readlink_f "${DINO_SOURCE}"); # Resolve the source so we can remap it
 set -- \
   --rm \
   -u "$(id -u):$(id -g)" \
-  -v "$(readlink_f "${DESTINATION}"):/usr/local" \
-  -v "$(readlink_f "${SOURCE}"):${IMG_NAMESPACE%/}/${abssrc#/}" \
+  -v "$(readlink_f "${DINO_DEST}"):/usr/local" \
+  -v "$(readlink_f "${DINO_SOURCE}"):${IMG_NAMESPACE%/}/${abssrc#/}" \
   -w "${IMG_NAMESPACE%/}/${abssrc#/}"
 # Dependencies should be written as name of option (without leading double
 # dash), followed by an equal sign and the path to the dependency (no quotes).
@@ -108,12 +108,12 @@ set -- "$@" \
   "$IMG_NAME" \
     --source "${IMG_NAMESPACE%/}/${abssrc#/}" \
     --destination /usr/local \
-    --arch "$ARCHITECTURE" \
-    --steps "${STEPS:-}" \
+    --arch "$DINO_ARCH" \
+    --steps "${DINO_STEPS:-}" \
     --verbose="$DINO_VERBOSE"
-if [ "${SHARED:-}" = "0" ]; then
+if [ "${DINO_SHARED:-}" = "0" ]; then
   set -- "$@" --static
-elif [ "${SHARED:-}" = "1" ]; then
+elif [ "${DINO_SHARED:-}" = "1" ]; then
   set -- "$@" --shared
 fi
 # Pick the dependencies again, use the same location as where they are remapped.

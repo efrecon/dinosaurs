@@ -4,34 +4,34 @@
 # the presence of some variables. NOTE: It DESTROYS the program's argument
 # vector to be able to operate.
 
-[ -z "${DESTINATION:-}" ] && printf "You must set DESTINATION variable!" && exit 1
-[ -z "${SOURCE:-}" ] && printf "You must set SOURCE variable!" && exit 1
-[ -z "${ARCHITECTURE:-}" ] && printf "You must set ARCHITECTURE variable!" && exit 1
-[ -z "${VERSION:-}" ] && printf "You must set VERSION variable!" && exit 1
+[ -z "${DINO_DEST:-}" ] && printf "You must set DINO_DEST variable!" && exit 1
+[ -z "${DINO_SOURCE:-}" ] && printf "You must set DINO_SOURCE variable!" && exit 1
+[ -z "${DINO_ARCH:-}" ] && printf "You must set DINO_ARCH variable!" && exit 1
+[ -z "${DINO_VERSION:-}" ] && printf "You must set DINO_VERSION variable!" && exit 1
 [ -z "${DINO_PROJECT:-}" ] && printf "You must set DINO_PROJECT variable!" && exit 1
 
 
 verbose "Installing dependencies, requires admin privileges"
 "$(dirname "$(readlink_f "$0")")/docker/dependencies.sh"
 
-verbose "Building and installing into $DESTINATION"
-mkdir -p "$DESTINATION"
+verbose "Building and installing into $DINO_DEST"
+mkdir -p "$DINO_DEST"
 
 FLAGS=
-if [ -n "${SHARED+unset}" ]; then
-  if [ "${SHARED:-}" = "0" ]; then
+if [ -n "${DINO_SHARED+unset}" ]; then
+  if [ "${DINO_SHARED:-}" = "0" ]; then
     FLAGS=--static
-  elif [ "${SHARED:-}" = "1" ]; then
+  elif [ "${DINO_SHARED:-}" = "1" ]; then
     FLAGS=--shared
   fi
 fi
 
 set -- \
   "$(dirname "$(readlink_f "$0")")/docker/entrypoint.sh" \
-    --source "$SOURCE" \
-    --destination "$(readlink_f "$DESTINATION")" \
-    --arch "$ARCHITECTURE" \
-    --steps "${STEPS:-}" \
+    --source "$DINO_SOURCE" \
+    --destination "$(readlink_f "$DINO_DEST")" \
+    --arch "$DINO_ARCH" \
+    --steps "${DINO_STEPS:-}" \
     --verbose="$DINO_VERBOSE" \
     $FLAGS
 

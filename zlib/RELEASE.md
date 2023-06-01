@@ -1,6 +1,6 @@
-# zlib ${VERSION}
+# zlib ${DINO_VERSION}
 
-This is an [automatically][automation] compiled version ${VERSION} of zlib,
+This is an [automatically][automation] compiled version ${DINO_VERSION} of zlib,
 built out of the official [releases] of the project.
 
   [releases]: http://zlib.net/fossils/

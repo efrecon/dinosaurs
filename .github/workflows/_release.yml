@@ -32,7 +32,7 @@ jobs:
       - name: Generate README
         id: readme
         run: |
-          VERSION="${{ inputs.version }}"; export VERSION
+          DINO_VERSION="${{ inputs.version }}"; export DINO_VERSION
           envsubst < ./${{ inputs.project }}/RELEASE.md > /tmp/README.md
       - name: Create release
         id: release

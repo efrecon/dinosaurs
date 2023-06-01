@@ -59,6 +59,6 @@ fi
 for DINO_SUBTOOL in $DINO_CHAIN; do
   if [ -x "$(dirname "$(readlink_f "$0")")/$DINO_PROJECT/${DINO_SUBTOOL}.sh" ]; then
     verbose "Running $DINO_PROJECT/${DINO_SUBTOOL}.sh"
-    DINO_GRACEFULL=1 "$(dirname "$(readlink_f "$0")")/$DINO_PROJECT/${DINO_SUBTOOL}.sh" --verbose="$DINO_VERBOSE" --project "$DINO_PROJECT" "$@"
+    DINO_GRACEFUL=1 "$(dirname "$(readlink_f "$0")")/$DINO_PROJECT/${DINO_SUBTOOL}.sh" --verbose="$DINO_VERBOSE" --project "$DINO_PROJECT" "$@"
   fi
 done
