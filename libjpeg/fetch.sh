@@ -17,8 +17,10 @@ USAGE="downloads libJPEG into a directory"
 
 # Set default destination directory when empty, i.e. not set in options
 [ -z "$DESTINATION" ] && DESTINATION="${OUTDIR%/}/${DINO_PROJECT}${VERSION}"
+
 # shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/tarurl.sh
 TARURL="http://ijg.org/files/jpegsrc.v${VERSION}.tar.gz"
+TARURL_NAME=jpeg
 
 # Download from the IJG website
 . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/tarurl.sh"
