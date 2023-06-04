@@ -8,5 +8,5 @@ COPY libjpeg/docker/dependencies.sh /opt/dinosaurs/bin/
 RUN /opt/dinosaurs/bin/dependencies.sh
 
 # Install the entrypoint and run it
-COPY libjpeg/docker/entrypoint.sh /opt/dinosaurs/bin/
-ENTRYPOINT ["/opt/dinosaurs/bin/entrypoint.sh"]
+COPY libjpeg/docker/build.sh /opt/dinosaurs/bin/
+ENTRYPOINT ["/opt/dinosaurs/bin/build.sh"]

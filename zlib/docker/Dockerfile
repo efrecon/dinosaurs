@@ -9,5 +9,5 @@ COPY zlib/docker/dependencies.sh /opt/dinosaurs/bin/
 RUN /opt/dinosaurs/bin/dependencies.sh
 
 # Install the entrypoint and run it
-COPY zlib/docker/entrypoint.sh /opt/dinosaurs/bin/
-ENTRYPOINT ["/opt/dinosaurs/bin/entrypoint.sh"]
+COPY zlib/docker/build.sh /opt/dinosaurs/bin/
+ENTRYPOINT ["/opt/dinosaurs/bin/build.sh"]

@@ -2,13 +2,13 @@
 
 set -eu
 
-. "$(dirname "$0")/../share/dinosaurs/lib/utils.sh"
+. "$(cd -L -- "$(dirname "$0")" && pwd -P)/../share/dinosaurs/lib/utils.sh"
 USAGE="Clean binaries and downloads for project(s)"
-. "$(dirname "$0")/../share/dinosaurs/lib/options.sh"
+. "$(cd -L -- "$(dirname "$0")" && pwd -P)/../share/dinosaurs/lib/options.sh"
 
 clean() {
   verbose "Cleaning $proj"
-  find "$DINO_OUTDIR" -maxdepth 2 -depth -name "${1}*" -type d -exec rm -rf {} \;
+  find "$DINO_OUTDIR" -maxdepth 2 -depth -name "${1}*" -exec rm -rf {} \;
 }
 
 if [ "$#" -eq 0 ]; then

@@ -3,7 +3,7 @@
 set -eu
 
 # shellcheck source=../../share/dinosaurs/lib/utils.sh
-. "$(cd "$(dirname "$0")"; pwd -P)/../share/dinosaurs/lib/utils.sh"
+. "$(cd -L -- "$(dirname "$0")" && pwd -P)/../share/dinosaurs/lib/utils.sh"
 
 # Destination directory. Will default to a subdirectory of the current, carrying
 # the version number when empty.
@@ -20,22 +20,21 @@ DINO_SHARED=${DINO_SHARED:-"1"}
 DINO_STEPS=${DINO_STEPS:-"configure build install clean"}
 
 # shellcheck disable=SC2034 # Variable used in lib/options.sh
-USAGE="builds Tk on UNIX"
+USAGE="builds zlib on UNIX"
 
 # shellcheck source=../../share/dinosaurs/lib/options.sh
 . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/options.sh"
 
-cd "${DINO_SOURCE}/unix"
+cd "${DINO_SOURCE}"
 
 if printf '%s\n' "$DINO_STEPS" | grep -q configure; then
-  verbose "Configuring Tk"
-  autoconf
+  verbose "Configuring zlib"
   case "$DINO_ARCH" in
     x86_64-*-linux*)
-      CFLAGS="-m64" ./configure --enable-gcc --enable-shared="$DINO_SHARED" --prefix="$DINO_DEST" "$@"
+      CFLAGS="-m64 -fPIC" prefix="$DINO_DEST" ./configure "$@"
       ;;
     i?86-*-linux*)
-      CFLAGS="-m32" LDFLAGS="-m32" ./configure --enable-gcc --enable-shared="$DINO_SHARED" --prefix="$DINO_DEST" "$@"
+      CFLAGS="-m32 -fPIC" prefix="$DINO_DEST" ./configure "$@"
       ;;
     *)
       echo "Unsupported architecture: $DINO_ARCH" >&2
@@ -44,21 +43,14 @@ if printf '%s\n' "$DINO_STEPS" | grep -q configure; then
   esac
 fi
 if printf '%s\n' "$DINO_STEPS" | grep -q build; then
-  verbose "Building Tk"
+  verbose "Building zlib"
   make
 fi
 if printf '%s\n' "$DINO_STEPS" | grep -q install; then
-  verbose "Installing Tk"
-  if [ -f "install-sh" ]; then
-    if ! [ -x "install-sh" ]; then
-      warning "Fixing install-sh permissions"
-      chmod a+x "install-sh"
-    fi
-  fi
-  # avoid manuals because they require hard links
-  make install-binaries install-libraries
+  verbose "Installing zlib"
+  make install
 fi
 if printf '%s\n' "$DINO_STEPS" | grep -q clean; then
-  verbose "Cleaning Tk"
+  verbose "Cleaning zlib"
   make distclean
 fi

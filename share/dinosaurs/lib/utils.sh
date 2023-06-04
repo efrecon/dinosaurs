@@ -15,6 +15,23 @@ warning() { _log "$1" WRN; }
 error() { _log "$1" ERR && exit 1; }
 
 
+# Print usage out of content of main script and exit.
+usage() {
+  # This uses the comments behind the options to show the help. Not extremly
+  # correct, but effective and simple.
+  if [ -z "$USAGE" ]; then
+    USAGE="a part of the dinosaurs project"
+  fi
+  printf "%s: %s\\n" "$(basename "$0")" "$USAGE" && \
+    grep "[[:space:]]\-.*)\ #" "$0" |
+    sed 's/#//' |
+    sed 's/)/\t/'
+  printf \\nEnvironment:\\n
+  set | grep '^DINO_' | sed 's/^DINO_/    DINO_/g'
+  exit "${1:-0}"
+}
+
+
 # Download the url passed as the first argument to the destination path passed
 # as a second argument. The destination will be the same as the basename of the
 # URL, in the current directory, if omitted.

@@ -2,7 +2,7 @@
 
 set -eu
 
-. "$(cd "$(dirname "$0")"; pwd -P)/../share/dinosaurs/lib/utils.sh"
+. "$(cd -L -- "$(dirname "$0")" && pwd -P)/../share/dinosaurs/lib/utils.sh"
 
 # Version of libpng to build.
 DINO_VERSION=${DINO_VERSION:-"1.0.69"}
@@ -22,14 +22,12 @@ DINO_DOCKER=${DINO_DOCKER:-"1"}
 DINO_STEPS=${DINO_STEPS:-"configure build install clean"}
 
 # shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/options.sh
-USAGE="builds libpng using Docker"
-. "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/options.sh"
-
-IMG_BASE=$DINO_PROJECT
+USAGE="builds libpng (and zlib at proper version)"
+. "$(cd -L -- "$(dirname "$0")" && pwd -P)/../share/dinosaurs/lib/options.sh"
 
 # Set source and destination directories when empty, i.e. not set in options
-[ -z "$DINO_SOURCE" ] && DINO_SOURCE="${DINO_OUTDIR%/}/${IMG_BASE}${DINO_VERSION}"
-[ -z "$DINO_DEST" ] && DINO_DEST="${DINO_OUTDIR%/}/${DINO_ARCH}/${IMG_BASE}${DINO_VERSION}"
+[ -z "$DINO_SOURCE" ] && DINO_SOURCE="${DINO_OUTDIR%/}/${DINO_IMG_BASE}${DINO_VERSION}"
+[ -z "$DINO_DEST" ] && DINO_DEST="${DINO_OUTDIR%/}/${DINO_ARCH}/${DINO_IMG_BASE}${DINO_VERSION}"
 
 # Check that the source directory exists
 [ ! -d "$DINO_SOURCE" ] && error "Source directory $DINO_SOURCE does not exist"
@@ -69,7 +67,7 @@ if [ -d "$ZLIBSRC" ]; then
   verbose "Trying to use zlib from $ZLIBSRC"
 else
   warning "$ZLIBSRC is not a directory, will fetch it first"
-  "$(dirname "$(readlink_f "$0")")/../zlib/fetch.sh" \
+  "${DINO_ROOTDIR%/}/zlib/fetch.sh" \
     --version "$ZLIB_VERSION" \
     --destination "$ZLIBSRC" \
     --verbose="$DINO_VERBOSE"
@@ -79,7 +77,7 @@ if [ -x "${ZLIBSRC}/minigzip" ]; then
   verbose "Found minigzip at ${ZLIBSRC}/minigzip"
 else
   warning "${ZLIBSRC}/minigzip is not executable, will build zlib first"
-  "$(dirname "$(readlink_f "$0")")/../zlib/build.sh" \
+  "${DINO_ROOTDIR%/}/zlib/build.sh" \
     --version "$ZLIB_VERSION" \
     --source "$ZLIBSRC" \
     --arch "$DINO_ARCH" \
@@ -89,19 +87,29 @@ else
   ZLIBCLEAN=1
 fi
 
-PREFIX=${DINO_OUTDIR%/}/${DINO_ARCH}/zlib${ZLIB_VERSION}
+# Export all DINO_* variables
+for var in $(set | grep '^DINO_'|sed 's/=.*//g'); do export "${var?}"; done
+
+# shellcheck disable=SC2034 # Variable used in share/dinosaurs/lib/docker.sh
 if [ "$DINO_DOCKER" = "1" ]; then
   verbose "Building in Docker container (zlib at $ZLIBSRC) and installing into $DINO_DEST"
   # Build using the Dockerfile from under the docker sub-directory
-  . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/docker.sh"
+  "${DINO_ROOTDIR%/}/share/dinosaurs/bin/docker.sh" \
+    --prefix "${DINO_OUTDIR%/}/${DINO_ARCH}/zlib${ZLIB_VERSION}" \
+    -- \
+      "$@"
 else
-  . "$(dirname "$(readlink_f "$0")")/../share/dinosaurs/lib/host.sh"
+  verbose "Building directly in host (requires admin privileges) (zlib at $ZLIBSRC) and installing into $DINO_DEST"
+  "${DINO_ROOTDIR%/}/share/dinosaurs/bin/host.sh" \
+    --prefix "${DINO_OUTDIR%/}/${DINO_ARCH}/zlib${ZLIB_VERSION}" \
+    -- \
+      "$@"
 fi
 
 # If zlib was built, clean it up
 if [ "$ZLIBCLEAN" = "1" ]; then
   verbose "Cleaning auto-built zlib"
-  "$(dirname "$(readlink_f "$0")")/../zlib/build.sh" \
+  "${DINO_ROOTDIR%/}/zlib/build.sh" \
     --version "$ZLIB_VERSION" \
     --source "$ZLIBSRC" \
     --arch "$DINO_ARCH" \

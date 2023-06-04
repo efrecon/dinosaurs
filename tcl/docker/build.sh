@@ -3,7 +3,7 @@
 set -eu
 
 # shellcheck source=../../share/dinosaurs/lib/utils.sh
-. "$(cd "$(dirname "$0")"; pwd -P)/../share/dinosaurs/lib/utils.sh"
+. "$(cd -L -- "$(dirname "$0")" && pwd -P)/../share/dinosaurs/lib/utils.sh"
 
 # Destination directory. Will default to a subdirectory of the current, carrying
 # the version number when empty.
