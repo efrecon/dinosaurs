@@ -51,6 +51,7 @@ done
 mkdir -p "$DINO_DEST"
 
 # Create the tarball and print the name of the file on success.
+verbose "Creating tarball $DINO_TAR_DESTFILE from $DINO_SOURCE"
 if tar \
     -C "$(dirname "$DINO_SOURCE")" \
     -czf "$DINO_TAR_DESTFILE" \

@@ -26,8 +26,8 @@ USAGE="builds libjpeg"
 . "$(cd -L -- "$(dirname "$0")" && pwd -P)/../share/dinosaurs/lib/options.sh"
 
 # Set source and destination directories when empty, i.e. not set in options
-[ -z "$DINO_SOURCE" ] && DINO_SOURCE="${DINO_OUTDIR%/}/${DINO_IMG_BASE}${DINO_VERSION}"
-[ -z "$DINO_DEST" ] && DINO_DEST="${DINO_OUTDIR%/}/${DINO_ARCH}/${DINO_IMG_BASE}${DINO_VERSION}"
+[ -z "$DINO_SOURCE" ] && DINO_SOURCE="${DINO_OUTDIR%/}/${DINO_PROJECT}${DINO_VERSION}"
+[ -z "$DINO_DEST" ] && DINO_DEST="${DINO_OUTDIR%/}/${DINO_ARCH}/${DINO_PROJECT}${DINO_VERSION}"
 
 # Check that the source directory exists
 [ ! -d "$DINO_SOURCE" ] && error "Source directory $DINO_SOURCE does not exist"
