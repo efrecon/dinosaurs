@@ -2,23 +2,15 @@
 
 set -eu
 
-. "$(cd "$(dirname "$0")"; pwd -P)/share/dinosaurs/lib/utils.sh"
+. "$(cd -L -- "$(dirname "$0")" && pwd -P)/share/dinosaurs/lib/utils.sh"
 
 # Chain of sub-tools to call
 DINO_CHAIN=${DINO_CHAIN:-"fetch build pack"}
 
 DINO_VERBOSE=${DINO_VERBOSE:-0}
 
-usage() {
-  # This uses the comments behind the options to show the help. Not extremly
-  # correct, but effective and simple.
-  printf "%s call the other tools in turns\\n" "$0" && \
-    grep "[[:space:]]\-.*)\ #" "$0" |
-    sed 's/#//' |
-    sed 's/)/\t/'
-  exit "${1:-0}"
-}
-
+# Set the usage message
+USAGE="Call the other sub-tools in a chain"
 
 while [ $# -gt 0 ]; do
   case "$1" in

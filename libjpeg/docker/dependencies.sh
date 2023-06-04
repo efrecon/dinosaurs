@@ -3,7 +3,7 @@
 set -eu
 
 # shellcheck source=../../share/dinosaurs/lib/utils.sh
-. "$(cd "$(dirname "$0")"; pwd -P)/../share/dinosaurs/lib/utils.sh"
+. "$(cd -L -- "$(dirname "$0")" && pwd -P)/../share/dinosaurs/lib/utils.sh"
 
 # Turn down warnings about non-interactive mode
 DEBIAN_FRONTEND=noninteractive

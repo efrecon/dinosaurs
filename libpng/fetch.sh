@@ -2,7 +2,7 @@
 
 set -eu
 
-. "$(cd "$(dirname "$0")"; pwd -P)/../share/dinosaurs/lib/utils.sh"
+. "$(cd -L -- "$(dirname "$0")" && pwd -P)/../share/dinosaurs/lib/utils.sh"
 
 # Version of libpng to fetch.
 DINO_VERSION=${DINO_VERSION:-"1.0.69"}
