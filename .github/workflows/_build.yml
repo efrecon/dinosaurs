@@ -26,12 +26,14 @@ jobs:
         id: download
         run: |
           ./${{ inputs.project }}/fetch.sh \
+            --verbose \
             --version "${{ inputs.version }}"
       - name: Build ${{ inputs.project }}
         id: build
         run: |
           ./${{ inputs.project }}/build.sh \
-            --version "${{ inputs.version }}" \
+          --verbose \
+          --version "${{ inputs.version }}" \
             --architecture "${{ inputs.architecture }}" \
             ${{ inputs.build-args }}
       - name: Pack ${{ inputs.project }}
@@ -39,6 +41,7 @@ jobs:
         run: |
           printf "TARBALL=%s\n" \
             "$(./${{ inputs.project }}/pack.sh \
+                --verbose \
                 --version "${{ inputs.version }}" \
                 --architecture "${{ inputs.architecture }}")" >> "$GITHUB_OUTPUT"
       - name: Upload ${{ inputs.project }}
